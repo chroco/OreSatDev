@@ -92,6 +92,11 @@ module OreSatDev {
     stack size Default.STACK_SIZE \
     priority 95
 
+  instance coMgr: Components.CANopenManager base id 0x0F00 \
+   queue size Default.QUEUE_SIZE \
+   stack size Default.STACK_SIZE \
+   priority 94
+
   # ----------------------------------------------------------------------
   # Queued component instances
   # ----------------------------------------------------------------------

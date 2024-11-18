@@ -15,7 +15,8 @@ module OreSatDev {
     # ----------------------------------------------------------------------
     # Instances used in the topology
     # ----------------------------------------------------------------------
-    
+
+    instance coMgr
     instance gpioDriver
     instance led
     instance $health
