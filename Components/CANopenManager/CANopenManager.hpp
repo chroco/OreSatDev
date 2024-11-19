@@ -95,17 +95,21 @@ namespace Components {
       bool m_quitCANopenManager;
       bool m_quitTask;
 
+      int canopennode_init(uint16_t, uint8_t);
       static void CANopenTaskEntry(void* ptr);
       static void testTaskEntry(void* ptr);
       static void tmrTask_thread(void* ptr);
-      
+     
+      bool canopennode_is_running(void);
+      void canopennode_stop(void);
+
       static void co_sdo_server_thread(void *);
       static void co_main_thread(void *);
       static void co_rt_thread(void *);
       
-      Os::Task m_co_sdoServerTask;
+      Os::Task m_co_sdoServerTask[OD_CNT_SDO_SRV];
       Os::Task m_co_mainTask;
-      Os::Task m_co_rt_Task;
+      Os::Task m_co_rtTask;
 
       Os::Task::ParamType m_co_sdoServerTaskId;
 
@@ -140,7 +144,27 @@ namespace Components {
           U32 cmdSeq //!< The command sequence number
       ) override;
 
+      // ----------------------------------------------------------------------
+      // Handler implementations for user-defined typed input ports
+      // ----------------------------------------------------------------------
+
+      //! Handler implementation for run
+      //!
+      //! Port receiving calls from the rate group
+      void run_handler(
+          FwIndexType portNum, //!< The port number
+          U32 context //!< The call order
+      ) override;
+
+
   };
+
+  typedef struct TaskObject{
+    CANopenManager *comPtr;
+    size_t sdoTask;
+    //Os::Task m_coTask;
+  } TaskObject_t;
+
 
 }
 

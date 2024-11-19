@@ -140,6 +140,7 @@ module OreSatDev {
       # Add here connections to user-defined components
       # Rate Group 1 (1Hz cycle) ouput is connected to led's run input
       rateGroup1.RateGroupMemberOut[3] -> led.run
+      #rateGroup1.RateGroupMemberOut[4] -> coMgr.run
       # led's gpioSet output is connected to gpioDriver's gpioWrite input
       led.gpioSet -> gpioDriver.gpioWrite
     }

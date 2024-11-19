@@ -7,6 +7,13 @@ module Components {
         @ TODO
         async command TODO opcode 0
 
+
+        @ Timer interval in rate group ticks
+        param TIMER_INTERVAL: U32 default 1 
+
+        @ Port receiving calls from the rate group
+        async input port run: Svc.Sched
+        
         ##############################################################################
         #### Uncomment the following examples to start customizing your component ####
         ##############################################################################

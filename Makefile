@@ -1,7 +1,7 @@
 DEPLOYMENT= OreSatDev
 ARCH= arm-hf-linux
 HOST= debian 
-IP= 192.168.13.2
+IP= 192.168.13.5
 MAKEFLAGS += --silent
 
 .PHONY: all impl gds xc cp
