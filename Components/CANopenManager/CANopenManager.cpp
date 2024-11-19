@@ -7,14 +7,36 @@
 #include "Components/CANopenManager/CANopenManager.hpp"
 #include "FpConfig.hpp"
 
+/*
+extern "C" {
+#include "CO_error.h"
+#include "CO_epoll_interface.h"
+#include "CO_storageLinux.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sched.h>
+#include <signal.h>
+#include <errno.h>
+#include <stdarg.h>
+#include <syslog.h>
+#include <time.h>
+#include <sys/epoll.h>
+#include <net/if.h>
+#include <linux/reboot.h>
+#include <sys/reboot.h>
+
 
 #include "CANopen.h"
 #include "OD.h"
-#include "CO_storageBlank.h"
+}
+//*/
 
 namespace Components {
 
+  CO_t* COptr = NULL;                  
+  
   // ----------------------------------------------------------------------
   // Component construction and destruction
   // ----------------------------------------------------------------------
@@ -24,18 +46,35 @@ namespace Components {
       CANopenManagerComponentBase(compName),
       m_quitCANopenManager(false),
       m_quitTask(false),
-      m_loopCounter(0)
+      m_loopCounter(0),
+      CANptr(0),
+      SDOserver(NULL)
   {
 
-      CO_t* CO = NULL;
-      CO_ReturnError_t err = 0;
-      CO_NMT_reset_cmd_t reset = CO_RESET_NOT;
-      heapMemoryUsed = 0;
-      *CANptr = NULL;
-      pendingNodeId = 10;
-      activeNodeId = 10;
+      //CO = NULL;
+//*
+      CO = CO_new(config_ptr, &heapMemoryUsed);
+      if (CO == NULL) {
+          //printf("Error: Can't allocate memory\n");
+          log_printf(2,"Error: Can't allocate memory\n");
+          return;
+          //return 0;
+      } else {
+          //printf("Allocated %u bytes for CANopen objects\n", com->heapMemoryUsed);
+          log_printf(5,"Allocated %u bytes for CANopen objects\n", heapMemoryUsed);
+      }
+//*/
+
+      COptr = CO;
+      
+      //CO_ReturnError_t err;
+      //CO_NMT_reset_cmd_t reset = CO_RESET_NOT;
+      //heapMemoryUsed = 0;
+      //CANptr = NULL;
+//      pendingNodeId = 10;
+//      activeNodeId = 10;
       pendingBitRate = 0;
-      *config_ptr = NULL;
+//      config_ptr = NULL;
   }
 
   CANopenManager ::
@@ -43,6 +82,7 @@ namespace Components {
   {
       this->quitCANopenManager();
       this->m_coTask.join();
+      this->m_timerTask.join();
   }
 
   // ----------------------------------------------------------------------
@@ -59,23 +99,48 @@ namespace Components {
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
   }
 
-#define log_printf(macropar_message, ...) printf(macropar_message, ##__VA_ARGS__)
+void CANopenManager::process_cb(void *ptr) {
+    FW_ASSERT(ptr != nullptr);
+    CANopenManager *com = reinterpret_cast<CANopenManager*>(ptr);
+    com->m_co_sdoServerTask.resume();
+}
 
-/* default values for CO_CANopenInit() */
-/*
-#define NMT_CONTROL                                                                                                    \
-        CO_NMT_STARTUP_TO_OPERATIONAL                                                                                      \
-        | CO_NMT_ERR_ON_ERR_REG | CO_ERR_REG_GENERIC_ERR | CO_ERR_REG_COMMUNICATION
-#define FIRST_HB_TIME        500
-#define SDO_SRV_TIMEOUT_TIME 1000
-#define SDO_CLI_TIMEOUT_TIME 500
-#define SDO_CLI_BLOCK        false
-#define OD_STATUS_BITS       NULL
-//*/
+void CANopenManager::co_sdo_server_thread(void *ptr) {
+    FW_ASSERT(ptr != nullptr);
+    CANopenManager *com = reinterpret_cast<CANopenManager*>(ptr);
 
-/* Global variables and objects */
-//CO_t* CO = NULL; /* CANopen object */
-//uint8_t LED_red, LED_green;
+    CO_SDOserver_t *SDOserver = (CO_SDOserver_t *)com->SDOserver;
+    uint32_t elapsed_us = -1;
+    struct timespec start, stop;
+    
+    /* Register the callback function to wake up thread when message received */
+    CO_SDOserver_initCallbackPre(SDOserver, (void *)&ptr, CANopenManager::process_cb);
+
+    while (com->reset == CO_RESET_NOT) {
+      clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
+      CO_SDOserver_process(SDOserver, true, elapsed_us, NULL);
+      com->m_co_sdoServerTask.suspend();
+      clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &stop);
+      elapsed_us = (stop.tv_sec - start.tv_sec) * 1e6 + (stop.tv_nsec - start.tv_nsec) / 1e3;    // in microseconds
+    }
+
+    CO_SDOserver_initCallbackPre(SDOserver, NULL, NULL);
+}
+
+void CANopenManager::co_main_thread(void *ptr) {
+    FW_ASSERT(ptr != nullptr);
+
+}
+
+void CANopenManager::co_rt_thread(void *ptr) {
+    FW_ASSERT(ptr != nullptr);
+
+}
+
+
+
+
+
 
 void CANopenManager::testTaskEntry(void* ptr) {
     FW_ASSERT(ptr != nullptr);
@@ -88,25 +153,16 @@ void CANopenManager::testTaskEntry(void* ptr) {
     }
 }
 
-void CANopenManager::coSdoServerTaskEntry(void* ptr) {
-
-}
-
-void CANopenManager::coMainTaskEntry(void* ptr) {
-
-}
-
-void CANopenManager::coRtTaskEntry(void* ptr) {
-
-}
-
 void CANopenManager::CANopenTaskEntry(void* ptr) {
-//   CO_ReturnError_t err;
-//   CO_NMT_reset_cmd_t reset = CO_RESET_NOT;
+    FW_ASSERT(ptr != nullptr);
+
+    CANopenManager *com = reinterpret_cast<CANopenManager*>(ptr);
+    CO_ReturnError_t err;
+    CO_NMT_reset_cmd_t reset = CO_RESET_NOT;
 //   uint32_t heapMemoryUsed;
 //   void* CANptr = NULL;           /* CAN module address */
-//   uint8_t pendingNodeId = 10;    /* read from dip switches or nonvolatile memory, configurable by LSS slave */
-//   uint8_t activeNodeId = 10;     /* Copied from CO_pendingNodeId in the communication reset section */
+    uint8_t pendingNodeId = 10;    /* read from dip switches or nonvolatile memory, configurable by LSS slave */
+    uint8_t activeNodeId = 10;     /* Copied from CO_pendingNodeId in the communication reset section */
 //   //uint16_t pendingBitRate = 125; /* read from dip switches or nonvolatile memory, configurable by LSS slave */
 //   uint16_t pendingBitRate = 0; /* read from dip switches or nonvolatile memory, configurable by LSS slave */
 
@@ -114,33 +170,37 @@ void CANopenManager::CANopenTaskEntry(void* ptr) {
 
     /* Allocate memory */
     //CO_config_t* config_ptr = NULL;
-//*
-    CO = CO_new(config_ptr, &heapMemoryUsed);
-    if (CO == NULL) {
-        log_printf("Error: Can't allocate memory\n");
+/*
+    com->CO = CO_new(com->config_ptr, &com->heapMemoryUsed);
+    if (com->CO == NULL) {
+        printf("Error: Can't allocate memory\n");
+        //log_printf("Error: Can't allocate memory\n");
         return;
         //return 0;
     } else {
-        log_printf("Allocated %u bytes for CANopen objects\n", heapMemoryUsed);
+        printf("Allocated %u bytes for CANopen objects\n", com->heapMemoryUsed);
+        //log_printf("Allocated %u bytes for CANopen objects\n", com->heapMemoryUsed);
     }
 //*/
 
     while (reset != CO_RESET_APP) 
     {
         /* CANopen communication reset - initialize CANopen objects *******************/
-        log_printf("CANopenNode - Reset communication...\n");
+        printf("CANopenNode - Reset communication...\n");
+        //log_printf("CANopenNode - Reset communication...\n");
 
         /* Wait rt_thread. */
-        CO->CANmodule->CANnormal = false;
+        com->CO->CANmodule->CANnormal = false;
 
         /* Enter CAN configuration. */
-        CO_CANsetConfigurationMode((void*)&CANptr);
-        CO_CANmodule_disable(CO->CANmodule);
+        CO_CANsetConfigurationMode((void*)&com->CANptr);
+        CO_CANmodule_disable(com->CO->CANmodule);
 
         /* initialize CANopen */
-        err = CO_CANinit(CO, CANptr, pendingBitRate);
+        err = CO_CANinit(com->CO, com->CANptr, com->pendingBitRate);
         if (err != CO_ERROR_NO) {
-            log_printf("Error: CAN initialization failed: %d\n", err);
+            printf("Error: CAN initialization failed: %d\n", err);
+            //log_printf("Error: CAN initialization failed: %d\n", err);
             return;
             //return 0;
         }
@@ -152,9 +212,10 @@ void CANopenManager::CANopenTaskEntry(void* ptr) {
                                                     .serialNumber = OD_RAM.x1018_identity.serial_number}};
 //*/
 
-        err = CO_LSSinit(CO, &lssAddress, &pendingNodeId, &pendingBitRate);
+        err = CO_LSSinit(com->CO, &lssAddress, &pendingNodeId, &com->pendingBitRate);
         if (err != CO_ERROR_NO) {
-            log_printf("Error: LSS slave initialization failed: %d\n", err);
+            printf("Error: LSS slave initialization failed: %d\n", err);
+            //log_printf("Error: LSS slave initialization failed: %d\n", err);
             return;
             //return 0;
         }
@@ -162,7 +223,7 @@ void CANopenManager::CANopenTaskEntry(void* ptr) {
         activeNodeId = pendingNodeId;
         uint32_t errInfo = 0;
 
-        err = CO_CANopenInit(CO,                   /* CANopen object */
+        err = CO_CANopenInit(com->CO,                   /* CANopen object */
                              NULL,                 /* alternate NMT */
                              NULL,                 /* alternate em */
                              OD,                   /* Object dictionary */
@@ -175,20 +236,24 @@ void CANopenManager::CANopenTaskEntry(void* ptr) {
                              activeNodeId, &errInfo);
         if (err != CO_ERROR_NO && err != CO_ERROR_NODE_ID_UNCONFIGURED_LSS) {
             if (err == CO_ERROR_OD_PARAMETERS) {
-                log_printf("Error: Object Dictionary entry 0x%X\n", errInfo);
+                printf("Error: Object Dictionary entry 0x%X\n", errInfo);
+                //log_printf("Error: Object Dictionary entry 0x%X\n", errInfo);
             } else {
-                log_printf("Error: CANopen initialization failed: %d\n", err);
+                printf("Error: CANopen initialization failed: %d\n", err);
+                //log_printf("Error: CANopen initialization failed: %d\n", err);
             }
             //return 0;
             return;
         }
 
-        err = CO_CANopenInitPDO(CO, CO->em, OD, activeNodeId, &errInfo);
+        err = CO_CANopenInitPDO(com->CO, com->CO->em, OD, activeNodeId, &errInfo);
         if (err != CO_ERROR_NO) {
             if (err == CO_ERROR_OD_PARAMETERS) {
-                log_printf("Error: Object Dictionary entry 0x%X\n", errInfo);
+                printf("Error: Object Dictionary entry 0x%X\n", errInfo);
+                //log_printf("Error: Object Dictionary entry 0x%X\n", errInfo);
             } else {
-                log_printf("Error: PDO initialization failed: %d\n", err);
+                printf("Error: PDO initialization failed: %d\n", err);
+                //log_printf("Error: PDO initialization failed: %d\n", err);
             }
             return;
             //return 0;
@@ -199,7 +264,7 @@ void CANopenManager::CANopenTaskEntry(void* ptr) {
         /* Configure CAN transmit and receive interrupt */
 
         /* Configure CANopen callbacks, etc */
-        if (!CO->nodeIdUnconfigured) {
+        if (!com->CO->nodeIdUnconfigured) {
 
 #if (CO_CONFIG_STORAGE) & CO_CONFIG_STORAGE_ENABLE
 /*
@@ -209,15 +274,17 @@ void CANopenManager::CANopenTaskEntry(void* ptr) {
 //*/
 #endif
         } else {
-            log_printf("CANopenNode - Node-id not initialized\n");
+            printf("CANopenNode - Node-id not initialized\n");
+            //log_printf("CANopenNode - Node-id not initialized\n");
         }
 
         /* start CAN */
-        CO_CANsetNormalMode(CO->CANmodule);
+        CO_CANsetNormalMode(com->CO->CANmodule);
 
         reset = CO_RESET_NOT;
 
-        log_printf("CANopenNode - Running...\n");
+        printf("CANopenNode - Running...\n");
+        //log_printf("CANopenNode - Running...\n");
         fflush(stdout);
 
         while (reset == CO_RESET_NOT) {
@@ -226,9 +293,7 @@ void CANopenManager::CANopenTaskEntry(void* ptr) {
             uint32_t timeDifference_us = 500;
 
             /* CANopen process */
-            reset = CO_process(CO, false, timeDifference_us, NULL);
-            LED_red = CO_LED_RED(CO->LEDs, CO_LED_CANopen);
-            LED_green = CO_LED_GREEN(CO->LEDs, CO_LED_CANopen);
+            reset = CO_process(com->CO, false, timeDifference_us, NULL);
 
             /* Nonblocking application code may go here. */
 
@@ -242,10 +307,11 @@ void CANopenManager::CANopenTaskEntry(void* ptr) {
     /* stop threads */
 
     /* delete objects from memory */
-    CO_CANsetConfigurationMode((void*)&CANptr);
-    CO_delete(CO);
+    CO_CANsetConfigurationMode((void*)&com->CANptr);
+    CO_delete(com->CO);
 
-    log_printf("CANopenNode finished\n");
+    printf("CANopenNode finished\n");
+    //log_printf("CANopenNode finished\n");
 
     /* reset */
     //return 0;
@@ -253,35 +319,40 @@ void CANopenManager::CANopenTaskEntry(void* ptr) {
 }
 
 /* timer thread executes in constant intervals ********************************/
-void tmrTask_thread(void) 
-{
+void CANopenManager::tmrTask_thread(void* ptr) {
+    FW_ASSERT(ptr != nullptr);
+    
+    CANopenManager *com = reinterpret_cast<CANopenManager*>(ptr);
+    FW_ASSERT(com->CO != nullptr);
+    
     for (;;) {
-        CO_LOCK_OD(CO->CANmodule);
-        if (!CO->nodeIdUnconfigured && CO->CANmodule->CANnormal) {
+        CO_LOCK_OD(com->CO->CANmodule);
+//*
+        if (!com->CO->nodeIdUnconfigured && com->CO->CANmodule->CANnormal) {
             bool_t syncWas = false;
-            /* get time difference since last function call */
+            // get time difference since last function call 
             uint32_t timeDifference_us = 1000;
 
 #if (CO_CONFIG_SYNC) & CO_CONFIG_SYNC_ENABLE
-            syncWas = CO_process_SYNC(CO, timeDifference_us, NULL);
+            syncWas = CO_process_SYNC(com->CO, timeDifference_us, NULL);
 #endif
 #if (CO_CONFIG_PDO) & CO_CONFIG_RPDO_ENABLE
-            CO_process_RPDO(CO, syncWas, timeDifference_us, NULL);
+            CO_process_RPDO(com->CO, syncWas, timeDifference_us, NULL);
 #endif
 #if (CO_CONFIG_PDO) & CO_CONFIG_TPDO_ENABLE
-            CO_process_TPDO(CO, syncWas, timeDifference_us, NULL);
+            CO_process_TPDO(com->CO, syncWas, timeDifference_us, NULL);
 #endif
 
-            /* Further I/O or nonblocking application code may go here. */
+            // Further I/O or nonblocking application code may go here. 
+//*/    
+        CO_UNLOCK_OD(com->CO->CANmodule);
         }
-        CO_UNLOCK_OD(CO->CANmodule);
     }
 }
 
 /* CAN interrupt function executes on received CAN message ********************/
 void /* interrupt */
 CO_CAN1InterruptHandler(void) {
-
     /* clear interrupt flag */
 }
 
@@ -292,20 +363,51 @@ void CANopenManager::start(
     Os::Task::ParamType taskId
 )
 {
+  //*
     Os::TaskString task("CANopenManager");
-    Os::Task::Arguments arguments(task, CANopenTaskEntry, this, 93, stackSize, cpuAffinity, taskId);
-    //Os::Task::Arguments arguments(task, CANopenTaskEntry, this, priority, stackSize, cpuAffinity, taskId);
+    Os::Task::Arguments arguments(task, CANopenTaskEntry, this, priority, stackSize, cpuAffinity, taskId);
     //Os::Task::Arguments arguments(task, testTaskEntry, this, priority, stackSize, cpuAffinity, taskId);
     Os::Task::Status stat = this->m_coTask.start(arguments);
     FW_ASSERT(stat == Os::Task::OP_OK, stat);
+  //*/
+    
+    Os::TaskString timerTask("TimerTask");
+    Os::Task::Arguments timerArguments(timerTask, tmrTask_thread, this, priority, stackSize, cpuAffinity, taskId);
+    Os::Task::Status timerStat = this->m_timerTask.start(timerArguments);
+    FW_ASSERT(timerStat == Os::Task::OP_OK, timerStat);
 }
 
 void CANopenManager::quitCANopenManager() {
     this->m_quitCANopenManager = true;
 }
 
-Os::Task::Status CANopenManager::join() {
-    return m_coTask.join();
+
 }
 
+/* Message logging function */
+void log_printf(int priority, const char* format, ...) {
+    va_list ap;
+
+    va_start(ap, format);
+    vsyslog(priority, format, ap);
+    va_end(ap);
+
+#if (CO_CONFIG_GTW) & CO_CONFIG_GTW_ASCII_LOG
+    if (Components::COptr != NULL) {
+        char buf[200];
+        time_t timer;
+        struct tm* tm_info;
+        size_t len;
+
+        timer = time(NULL);
+        tm_info = localtime(&timer);
+        len = strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S: ", tm_info);
+
+        va_start(ap, format);
+        vsnprintf(buf + len, sizeof(buf) - len - 2, format, ap);
+        va_end(ap);
+        strcat(buf, "\r\n");
+        CO_GTWA_log_print(Components::COptr->gtwa, buf);
+    }
+#endif
 }

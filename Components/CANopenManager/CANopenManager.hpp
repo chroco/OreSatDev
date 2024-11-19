@@ -9,7 +9,31 @@
 
 #include "Components/CANopenManager/CANopenManagerComponentAc.hpp"
 
-#define log_printf(macropar_message, ...) printf(macropar_message, ##__VA_ARGS__)
+extern "C" {
+#include "CO_error.h"
+#include "CO_epoll_interface.h"
+#include "CO_storageLinux.h"
+#include "CANopen.h"
+#include "OD.h"
+}
+
+#include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sched.h>
+#include <signal.h>
+#include <errno.h>
+#include <stdarg.h>
+#include <syslog.h>
+#include <time.h>
+#include <sys/epoll.h>
+#include <net/if.h>
+#include <linux/reboot.h>
+#include <sys/reboot.h>
+
+//#define log_printf(macropar_message, ...) printf(macropar_message, ##__VA_ARGS__)
 
 /* default values for CO_CANopenInit() */
 #define NMT_CONTROL                                                                                                    \
@@ -73,24 +97,33 @@ namespace Components {
 
       static void CANopenTaskEntry(void* ptr);
       static void testTaskEntry(void* ptr);
-      static void CANopenManager::coSdoServerTask(void* ptr);
-      static void CANopenManager::coMainTask(void* ptr);
-      static void CANopenManager::coRtTask(void* ptr);
+      static void tmrTask_thread(void* ptr);
       
+      static void co_sdo_server_thread(void *);
+      static void co_main_thread(void *);
+      static void co_rt_thread(void *);
+      
+      Os::Task m_co_sdoServerTask;
+      Os::Task m_co_mainTask;
+      Os::Task m_co_rt_Task;
+
+      Os::Task::ParamType m_co_sdoServerTaskId;
+
+      static void process_cb(void *ptr);
+
       void quitCANopenManager(void);
       
       uint16_t m_loopCounter;
 
       Os::Task m_coTask;
-      Os::Task::Status join();
-
+      Os::Task m_timerTask;
+      CO_SDOserver_t *SDOserver;
       CO_t* CO;                 // CANopen object 
-      CO_ReturnError_t err;
       CO_NMT_reset_cmd_t reset;
       uint32_t heapMemoryUsed;
-      void *CANptr;             // CAN module address 
-      uint8_t pendingNodeId;    // read from dip switches or nonvolatile memory, configurable by LSS slave
-      uint8_t activeNodeId;     // Copied from CO_pendingNodeId in the communication reset section
+      CO_CANptrSocketCan_t *CANptr;             // CAN module address 
+      //uint8_t pendingNodeId;    // read from dip switches or nonvolatile memory, configurable by LSS slave
+      //uint8_t activeNodeId;     // Copied from CO_pendingNodeId in the communication reset section
       uint16_t pendingBitRate;  // read from dip switches or nonvolatile memory, configurable by LSS slave
       CO_config_t *config_ptr;
       
