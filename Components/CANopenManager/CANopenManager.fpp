@@ -9,7 +9,7 @@ module Components {
 
 
         @ Timer interval in rate group ticks
-        param TIMER_INTERVAL: U32 default 1 
+        param CAN_INTERVAL: U32 default 1 
 
         @ Port receiving calls from the rate group
         async input port run: Svc.Sched

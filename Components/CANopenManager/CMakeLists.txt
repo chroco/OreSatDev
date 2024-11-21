@@ -87,6 +87,7 @@ set(SOURCE_FILES
 
 add_compile_options(
     -std=gnu99
+    -pthread
     #-DCO_SINGLE_THREAD
     #  -std=c++11
     -g

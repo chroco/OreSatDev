@@ -73,7 +73,6 @@ void teardownTopology(const TopologyState& state);
  *
  * \param milliseconds: milliseconds to delay for each cycle. Default: 1000 or 1Hz.
  */
-//void startSimulatedCycle(Fw::TimeInterval interval = Fw::TimeInterval(0,1));
 void startSimulatedCycle(Fw::TimeInterval interval = Fw::TimeInterval(1,0));
 
 /**

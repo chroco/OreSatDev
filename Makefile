@@ -21,5 +21,9 @@ xc:
 cp:
 	scp -r build-artifacts/$(ARCH)/$(DEPLOYMENT)/ debian@$(IP):~
 
+xp: 
+	fprime-util build $(ARCH) 
+	scp -r build-artifacts/$(ARCH)/$(DEPLOYMENT)/ debian@$(IP):~
+
 #clean:
 #	@rm -rf $(BUILD_DIR)/*
