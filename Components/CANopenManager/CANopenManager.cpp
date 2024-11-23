@@ -17,22 +17,21 @@ namespace Components {
   CANopenManager ::
     CANopenManager(const char* const compName) :
       CANopenManagerComponentBase(compName),
-      m_quitCANopenManager(false),
-      m_quitTask(false),
-      m_loopCounter(0),
-      CANptr({0}),
-      pendingBitRate(0),
-      SDOserver(NULL),
-      config_ptr(NULL),
-      CO(NULL)
+        m_quitCANopenManager(false),
+        m_quitTask(false),
+        m_loopCounter(0)
+       // CANptr({0}),
+        //pendingBitRate(0),
+        //SDOserver(NULL),
+        //config_ptr(NULL),
+        //CO(NULL)
   {
       printf("Entering CANopenManager Constructor\n");
       //canopennode_init(0, 13);
-      //CO = NULL;
-      COptr = CO;
+      //COptr = CO;
 
       printf("Leaving CANopenManager Constructor\n");
-      fflush(stdout);
+      //fflush(stdout);
   }
 
   CANopenManager ::
@@ -69,303 +68,209 @@ namespace Components {
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
   }
 
-bool CANopenManager::canopennode_is_running(void) {
-	return reset == CO_RESET_NOT;
-}
-
-void CANopenManager::canopennode_stop(void) {
-	/* stop threads */
-	reset = CO_RESET_QUIT;
-	//k_thread_join(&co_rt_thread_data, K_MSEC(1));
-	//k_thread_join(&co_main_thread_data, K_MSEC(1));
-  m_co_mainTask.join();
-  m_co_rtTask.join();
-	for (int i = 0; i < OD_CNT_SDO_SRV; i++) {
-    m_co_sdoServerTask[i].resume();
-    m_co_sdoServerTask[i].join();
-		//k_thread_resume(co_sdo_server_tids[i]);
-		//k_thread_join(&co_sdo_server_threads_data[i], K_MSEC(1));
-	}
-
-	/* delete objects from memory */
-  /* TODO: fix
-	if (CANptr != NULL) {
-		CO_CANsetConfigurationMode((void *)CANptr);
-	}
-  //*/
-	CO_delete(CO);
-
-	printf("CANopenNode finished\n");
-}
-
-int CANopenManager::canopennode_init(uint16_t bit_rate, uint8_t node_id) {
-	CO_ReturnError_t err;
-	uint32_t heapMemoryUsed;
-	uint32_t errInfo = 0;
-  bool_t firstRun = true;
-
-  printf("Entering canopennode_init\n");
-
-	/* Allocate memory */
-	//CO_config_t *config_ptr = NULL;
-	CO = CO_new(config_ptr, &heapMemoryUsed);
-
-	//FW_ASSERT(CO == NULL);
-	if (CO == NULL) {
-		printf("Can't allocate memory\n");
-    //log_printf(LOG_ERROR,"Error: Can't allocate memory\n");
-		return -1;
-	} else {
-		printf("Allocated %u bytes for CANopen objects\n", heapMemoryUsed);
-    //log_printf(LOG_INFORMATIONAL,"Allocated %u bytes for CANopen objects\n", heapMemoryUsed);
-	}
-
-  /* Wait rt_thread. */
-  //CO->CANmodule->CANnormal = false;
-  
-  //CANdevice = argv[optind];
-  const char* CANdevice = "can0";
-  //CANdevice = "can0";
-  printf("CANptr.can_ifindex %d\n",CANptr.can_ifindex);
-  CANptr.can_ifindex = if_nametoindex(CANdevice);
-  if (CANptr.can_ifindex == 0) {
-    //log_printf(LOG_CRIT, DBG_NO_CAN_DEVICE, CANdevice);
-    printf("no CAN device");    
-    return -1;
-  }
-
-  printf("CANptr.can_ifindex %d\n",CANptr.can_ifindex);
-  printf("starting...\n");
-
-  while (reset != CO_RESET_APP ) {//&& reset != CO_RESET_QUIT && CO_endProgram == 0) {
-      Os::Task::delay(Fw::TimeInterval(3,0));
-      /* CANopen communication reset - initialize CANopen objects */
-      printf("CANopenNode - Reset communication...\n");
-      //log_printf(LOG_INFORMATIONAL,"CANopenNode - Reset communication...\n");
-      //fflush(stdout);
-
-      /* Wait rt_thread. */
-      //CO->CANmodule->CANnormal = false;
-
-      /* CANopen communication reset - initialize CANopen objects *******************/
-      uint32_t errInfo;
-
-      /* Wait rt_thread. */
-      //*
-      if (!firstRun) {
-          CO_LOCK_OD(CO->CANmodule);
-          CO->CANmodule->CANnormal = false;
-          CO_UNLOCK_OD(CO->CANmodule);
-      }
-      //*/
-
-      /* Enter CAN configuration. */
-      CO_CANsetConfigurationMode((void *)&CANptr);
-      CO_CANmodule_disable(CO->CANmodule);
-
-      printf("%p  %p  %d\n", CO, &CANptr, bit_rate);
-      /* initialize CANopen */
-      err = CO_CANinit(CO,(void*)&CANptr, 1000);
-      if (err != CO_ERROR_NO) {
-        printf("CAN initialization failed: %d\n", err);
-        //log_printf(LOG_ERROR,"CAN initialization failed: %d\n", err);
-        continue;
-      }
-
-      printf("initializing...\n");
-      //fflush(stdout);
-      err = CO_CANopenInit(CO,                   /* CANopen object */
-               NULL,                 /* alternate NMT */
-               NULL,                 /* alternate em */
-               OD,                   /* Object dictionary */
-               OD_STATUS_BITS,       /* Optional OD_statusBits */
-               NMT_CONTROL,          /* CO_NMT_control_t */
-               FIRST_HB_TIME,        /* firstHBTime_ms */
-               SDO_SRV_TIMEOUT_TIME, /* SDOserverTimeoutTime_ms */
-               SDO_CLI_TIMEOUT_TIME, /* SDOclientTimeoutTime_ms */
-               SDO_CLI_BLOCK,        /* SDOclientBlockTransfer */
-               node_id, &errInfo);
-      if (err != CO_ERROR_NO && err != CO_ERROR_NODE_ID_UNCONFIGURED_LSS) {
-        if (err == CO_ERROR_OD_PARAMETERS) {
-          printf("Object Dictionary entry 0x%X\n", errInfo);
-          //log_printf(LOG_ERROR,"Object Dictionary entry 0x%X\n", errInfo);
-        } else {
-          printf("CANopen initialization failed: %d\n", err);
-          //log_printf(LOG_ERROR,"CANopen initialization failed: %d\n", err);
-        }
-        continue;
-      }
-
-      fflush(stdout);
-      err = CO_CANopenInitPDO(CO, CO->em, OD, node_id, &errInfo);
-      if (err != CO_ERROR_NO) {
-        if (err == CO_ERROR_OD_PARAMETERS) {
-          printf("Object Dictionary entry 0x%X\n", errInfo);
-          //log_printf(LOG_ERROR,"Object Dictionary entry 0x%X\n", errInfo);
-        } else {
-          printf("PDO initialization failed: %d\n", err);
-          fflush(stdout);
-          //log_printf(LOG_ERROR,"PDO initialization failed: %d\n", err);
-        }
-        continue;
-      }
-	/* Configure Timer interrupt function for execution every 1 millisecond */
-
-	/* Configure CAN transmit and receive interrupt */
-
-      if (CO->nodeIdUnconfigured) {
-        printf("CANopenNode - Node-id not initialized\n");
-        //log_printf(LOG_ERROR,"CANopenNode - Node-id not initialized\n");
-      }
-
-      fflush(stdout);
-    }
-	/* start CAN */
-	//CO_CANsetNormalMode(CO->CANmodule);
-
-	/* start threads */
 /*
-	for (size_t i = 0; i < OD_CNT_SDO_SRV; i++) {
-		co_sdo_server_tids[i] = k_thread_create(
-			&co_sdo_server_threads_data[i], co_sdo_server_stack_area[i],
-			K_THREAD_STACK_SIZEOF(co_sdo_server_stack_area[i]), co_sdo_server_thread,
-			&CO->SDOserver[i], NULL, NULL, CO_SDO_SRV_PRIORITY, 0, K_NO_WAIT);
-	}
-	co_main_tid = k_thread_create(&co_main_thread_data, co_main_stack_area,
-				      K_THREAD_STACK_SIZEOF(co_main_stack_area), co_main_thread,
-				      NULL, NULL, NULL, CO_MAIN_PRIORITY, 0, K_NO_WAIT);
-	co_rt_tid = k_thread_create(&co_rt_thread_data, co_rt_stack_area,
-				    K_THREAD_STACK_SIZEOF(co_rt_stack_area), co_rt_thread, NULL,
-				    NULL, NULL, CO_RT_PRIORITY, 0, K_NO_WAIT);
+ * CANopen main program file for CANopenNode on Linux.
+ *
+ * @file        CO_main_basic.c
+ * @author      Janez Paternoster
+ * @copyright   2020 Janez Paternoster
+ *
+ * This file is part of <https://github.com/CANopenNode/CANopenNode>, a CANopen Stack.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
 
-	k_timer_start(&co_timer, K_NO_WAIT, K_MSEC(1));
-//*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sched.h>
+#include <signal.h>
+#include <errno.h>
+#include <stdarg.h>
+#include <syslog.h>
+#include <time.h>
+#include <sys/epoll.h>
+#include <net/if.h>
+#include <linux/reboot.h>
+#include <sys/reboot.h>
 
-  printf("Exiting canopennode_init\n");
-  fflush(stdout);
-	return 0;
+extern "C" {
+#include "CANopen.h"
+#include "OD.h"
+#include "CO_error.h"
+#include "CO_epoll_interface.h"
+#include "CO_storageLinux.h"
 }
 
-
-void CANopenManager::process_cb(void *ptr) {
-    FW_ASSERT(ptr != nullptr);
-    TaskObject_t *toPtr = reinterpret_cast<TaskObject_t*>(ptr);
-    toPtr->comPtr->m_co_sdoServerTask[toPtr->sdoTask].resume();
+/* Include optional external application functions */
+#ifdef CO_USE_APPLICATION
+extern "C" {
+ #include "CO_application.h"
 }
-
-void CANopenManager::co_sdo_server_thread(void *ptr) {
-    FW_ASSERT(ptr != nullptr);
-    TaskObject_t *toPtr = reinterpret_cast<TaskObject_t*>(ptr);
-
-    CO_SDOserver_t *SDOserver = (CO_SDOserver_t *)toPtr->comPtr->SDOserver;
-    uint32_t elapsed_us = -1;
-    struct timespec start, stop;
-    
-    /* Register the callback function to wake up thread when message received */
-    CO_SDOserver_initCallbackPre(SDOserver, (void *)&toPtr, CANopenManager::process_cb);
-
-    while (toPtr->comPtr->reset == CO_RESET_NOT) {
-      clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
-      CO_SDOserver_process(SDOserver, true, elapsed_us, NULL);
-      toPtr->comPtr->m_co_sdoServerTask[toPtr->sdoTask].suspend();
-      clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &stop);
-      elapsed_us = (stop.tv_sec - start.tv_sec) * 1e6 + (stop.tv_nsec - start.tv_nsec) / 1e3;    // in microseconds
-    }
-
-    CO_SDOserver_initCallbackPre(SDOserver, NULL, NULL);
-}
-
-void CANopenManager::co_main_thread(void *ptr) {
-    FW_ASSERT(ptr != nullptr);
-    CANopenManager *com = reinterpret_cast<CANopenManager*>(ptr);
-    CO_t* CO = com->CO;
-    
-    uint32_t elapsed_us = 1000U;
-
-    com->reset = CO_RESET_NOT;
-    printf("CANopenNode - Running...\n");
-
-    while (com->reset == CO_RESET_NOT) {
-      //k_sleep(K_FOREVER);
-      com->m_co_mainTask.suspend();
-      com->reset = CO_process(CO, false, elapsed_us, NULL);
-    }
-}
-
-void CANopenManager::co_rt_thread(void *ptr) {
-    FW_ASSERT(ptr != nullptr);
-    CANopenManager *com = reinterpret_cast<CANopenManager*>(ptr);
-    CO_t* CO = com->CO;
-      
-    uint32_t elapsed_us = 1000U;
-    bool syncWas;
-
-    while (com->reset == CO_RESET_NOT) {
-        //k_sleep(K_FOREVER);
-        com->m_co_rtTask.suspend();
-        syncWas = false;
-
-        CO_LOCK_OD(CO->CANmodule);
-        if (!CO->nodeIdUnconfigured && CO->CANmodule->CANnormal) {
-#if (CO_CONFIG_SYNC) & CO_CONFIG_SYNC_ENABLE
-        syncWas = CO_process_SYNC(CO, elapsed_us, NULL);
 #endif
-#if (CO_CONFIG_PDO) & CO_CONFIG_RPDO_ENABLE
-        CO_process_RPDO(CO, syncWas, elapsed_us, NULL);
+
+/* Add trace functionality for recording variables over time */
+#if (CO_CONFIG_TRACE) & CO_CONFIG_TRACE_ENABLE
+extern "C" {
+#include "CO_time_trace.h"
+}
 #endif
-#if (CO_CONFIG_PDO) & CO_CONFIG_TPDO_ENABLE
-        CO_process_TPDO(CO, syncWas, elapsed_us, NULL);
+
+
+/* Interval of mainline and real-time thread in microseconds */
+#ifndef MAIN_THREAD_INTERVAL_US
+#define MAIN_THREAD_INTERVAL_US 100000
 #endif
-        }
-        
-        CO_UNLOCK_OD(CO->CANmodule);
-	  }
-}
+#ifndef TMR_THREAD_INTERVAL_US
+#define TMR_THREAD_INTERVAL_US 1000
+#endif
 
-void CANopenManager::co_timer_thread(void *ptr) {
-    FW_ASSERT(ptr != nullptr);
-    CANopenManager *com = reinterpret_cast<CANopenManager*>(ptr);
-    while(1) {
-      //com->m_co_mainTask.resume();
-      //com->m_co_rtTask.resume();
-      //printf("hi");
-      //fflush(stdout);
-      //Os::Task::delay(Fw::TimeInterval(1,0));
-      Os::Task::delay(Fw::TimeInterval(0,1000));
-    }
-}
+/* default values for CO_CANopenInit() */
+#ifndef NMT_CONTROL
+#define NMT_CONTROL                                                                                                    \
+    CO_NMT_STARTUP_TO_OPERATIONAL                                                                                      \
+    | CO_NMT_ERR_ON_ERR_REG | CO_ERR_REG_GENERIC_ERR | CO_ERR_REG_COMMUNICATION
+#endif
+#ifndef FIRST_HB_TIME
+#define FIRST_HB_TIME 500
+#endif
+#ifndef SDO_SRV_TIMEOUT_TIME
+#define SDO_SRV_TIMEOUT_TIME 1000
+#endif
+#ifndef SDO_CLI_TIMEOUT_TIME
+#define SDO_CLI_TIMEOUT_TIME 500
+#endif
+#ifndef SDO_CLI_BLOCK
+#define SDO_CLI_BLOCK false
+#endif
+#ifndef OD_STATUS_BITS
+#define OD_STATUS_BITS NULL
+#endif
+/* CANopen gateway enable switch for CO_epoll_processMain() */
+#ifndef GATEWAY_ENABLE
+#define GATEWAY_ENABLE true
+#endif
+/* Interval for time stamp message in milliseconds */
+#ifndef TIME_STAMP_INTERVAL_MS
+#define TIME_STAMP_INTERVAL_MS 10000
+#endif
 
-void CANopenManager::testTaskEntry(void* ptr) {
-    FW_ASSERT(ptr != nullptr);
-    
-    CANopenManager *com = reinterpret_cast<CANopenManager*>(ptr);
- 
-    for(; !com->m_quitTask; ++com->m_loopCounter)
-    {
-        Os::Task::delay(Fw::TimeInterval(0, 50000));
-    }
-}
+/* Definitions for application specific data storage objects */
+#ifndef CO_STORAGE_APPLICATION
+#define CO_STORAGE_APPLICATION
+#endif
+/* Interval for automatic data storage in microseconds */
+#ifndef CO_STORAGE_AUTO_INTERVAL
+#define CO_STORAGE_AUTO_INTERVAL 60000000
+#endif
 
-void CANopenManager::CANopenTaskEntry(void* ptr) {
-
-}
-
+/* CANopen object */
+CO_t* CO = NULL;
 
 /* Active node-id, copied from pendingNodeId in the communication reset */
 static uint8_t CO_activeNodeId = CO_LSS_NODE_ID_ASSIGNMENT;
 
+/* Data block for mainline data, which can be stored to non-volatile memory */
+typedef struct {
+    /* Pending CAN bit rate, can be set by argument or LSS slave. */
+    uint16_t pendingBitRate;
+    /* Pending CANopen NodeId, can be set by argument or LSS slave. */
+    uint8_t pendingNodeId;
+} mainlineStorage_t;
+
 mainlineStorage_t mlStorage = {0};
+
+#if (CO_CONFIG_TRACE) & CO_CONFIG_TRACE_ENABLE
+static CO_time_t CO_time; /* Object for current time */
+#endif
+
+/* Helper functions ***********************************************************/
+#ifndef CO_SINGLE_THREAD
+/* Realtime thread */
+CO_epoll_t epRT;
+static void* rt_thread(void* arg);
+#endif
+
+/* Signal handler */
+volatile sig_atomic_t CO_endProgram = 0;
+
+static void
+sigHandler(int sig) {
+    (void)sig;
+    CO_endProgram = 1;
+}
+
+/* Message logging function */
+/*
+void
+log_printf(int priority, const char* format, ...) {
+    va_list ap;
+
+    va_start(ap, format);
+    vsyslog(priority, format, ap);
+    va_end(ap);
+
+#if (CO_CONFIG_GTW) & CO_CONFIG_GTW_ASCII_LOG
+    if (CO != NULL) {
+        char buf[200];
+        time_t timer;
+        struct tm* tm_info;
+        size_t len;
+
+        timer = time(NULL);
+        tm_info = localtime(&timer);
+        len = strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S: ", tm_info);
+
+        va_start(ap, format);
+        vsnprintf(buf + len, sizeof(buf) - len - 2, format, ap);
+        va_end(ap);
+        strcat(buf, "\r\n");
+        CO_GTWA_log_print(CO->gtwa, buf);
+    }
+#endif
+}
+//*/
+
+#if (CO_CONFIG_EM) & CO_CONFIG_EM_CONSUMER
+/* callback for emergency messages */
+static void
+EmergencyRxCallback(const uint16_t ident, const uint16_t errorCode, const uint8_t errorRegister, const uint8_t errorBit,
+                    const uint32_t infoCode) {
+    int16_t nodeIdRx = ident ? (ident & 0x7F) : CO_activeNodeId;
+
+    log_printf(LOG_NOTICE, DBG_EMERGENCY_RX, nodeIdRx, errorCode, errorRegister, errorBit, infoCode);
+}
+#endif
 
 #if ((CO_CONFIG_NMT)&CO_CONFIG_NMT_CALLBACK_CHANGE) || ((CO_CONFIG_HB_CONS)&CO_CONFIG_HB_CONS_CALLBACK_CHANGE)
 /* return string description of NMT state. */
+
+char init[] = "initializing";
+char preo[] = "pre-operational";
+char oper[] = "operational";
+char stop[] = "stopped";
+char unkn[] = "unknown";
+
 static char*
 NmtState2Str(CO_NMT_internalState_t state) {
     switch (state) {
-        case CO_NMT_INITIALIZING: return "initializing";
-        case CO_NMT_PRE_OPERATIONAL: return "pre-operational";
-        case CO_NMT_OPERATIONAL: return "operational";
-        case CO_NMT_STOPPED: return "stopped";
-        default: return "unknown";
+        case CO_NMT_INITIALIZING: return init;
+        //case CO_NMT_INITIALIZING: return "initializing";
+        case CO_NMT_PRE_OPERATIONAL: return preo;
+        //case CO_NMT_PRE_OPERATIONAL: return "pre-operational";
+        case CO_NMT_OPERATIONAL: return oper;
+        //case CO_NMT_OPERATIONAL: return "operational";
+        case CO_NMT_STOPPED: return stop;
+        default: return unkn;
+        //default: return "unknown";
     }
 }
 #endif
@@ -390,42 +295,86 @@ HeartbeatNmtChangedCallback(uint8_t nodeId, uint8_t idx, CO_NMT_internalState_t 
 /* callback for storing node id and bitrate */
 static bool_t
 LSScfgStoreCallback(void* object, uint8_t id, uint16_t bitRate) {
-    mainlineStorage_t* mainlineStorage = reinterpret_cast<mainlineStorage_t*>(object);
-    //mainlineStorage_t* mainlineStorage = object;reinterpret_cast<CANopenManager*>(ptr);
+    mainlineStorage_t* mainlineStorage = static_cast<mainlineStorage_t *>(object);
     mainlineStorage->pendingNodeId = id;
     mainlineStorage->pendingBitRate = bitRate;
     return true;
 }
 
-/* Signal handler */
-volatile sig_atomic_t CO_endProgram = 0;
-
+/* Print usage */
 static void
-sigHandler(int sig) {
-    (void)sig;
-    CO_endProgram = 1;
-}
-
-
-#if (CO_CONFIG_EM) & CO_CONFIG_EM_CONSUMER
-/* callback for emergency messages */
-static void
-EmergencyRxCallback(const uint16_t ident, const uint16_t errorCode, const uint8_t errorRegister, const uint8_t errorBit,
-                    const uint32_t infoCode) {
-    int16_t nodeIdRx = ident ? (ident & 0x7F) : CO_activeNodeId;
-
-    log_printf(LOG_NOTICE, DBG_EMERGENCY_RX, nodeIdRx, errorCode, errorRegister, errorBit, infoCode);
-}
+printUsage(char* progName) {
+    printf("Usage: %s <CAN device name> [options]\n", progName);
+    printf("\n"
+           "Options:\n"
+           "  -i <Node ID>        CANopen Node-id (1..127) or 0xFF (LSS unconfigured).\n");
+#ifndef CO_SINGLE_THREAD
+    printf("  -p <RT priority>    Real-time priority of RT thread (1 .. 99). If not set or\n"
+           "                      set to -1, then normal scheduler is used for RT thread.\n");
 #endif
+    printf("  -r                  Enable reboot on CANopen NMT reset_node command. \n");
+#if (CO_CONFIG_STORAGE) & CO_CONFIG_STORAGE_ENABLE
+/*
+    printf("  -s <storage path>   Path and filename prefix for data storage files.\n"
+           "                      By default files are stored in current dictionary.\n");
+//*/
+#endif
+#if (CO_CONFIG_GTW) & CO_CONFIG_GTW_ASCII
+    printf("  -c <interface>      Enable command interface for master functionality.\n"
+           "                      One of three types of interfaces can be specified as:\n"
+           "                   1. \"stdio\" - Standard IO of a program (terminal).\n"
+           "                   2. \"local-<file path>\" - Local socket interface on file\n"
+           "                      path, for example \"local-/tmp/CO_command_socket\".\n"
+           "                   3. \"tcp-<port>\" - Tcp socket interface on specified \n"
+           "                      port, for example \"tcp-60000\".\n"
+           "                      Note that this option may affect security of the CAN.\n"
+           "  -T <timeout_time>   If -c is specified as local or tcp socket, then this\n"
+           "                      parameter specifies socket timeout time in milliseconds.\n"
+           "                      Default is 0 - no timeout on established connection.\n");
+#endif
+    printf("\n"
+           "See also: https://github.com/CANopenNode/CANopenNode\n"
+           "\n");
+}
 
-int CANopenManager::testInit(void) {
-    int programExit = EXIT_SUCCESS;
+#undef CO_CONFIG_STORAGE 
+#undef CO_USE_APPLICATION 
+
+/*******************************************************************************
+ * Mainline thread
+ ******************************************************************************/
+int
+testThisTrash() {
+//CANopenManager::testInit() {
+//main(int argc, char* argv[]) {
+
+		printf("Entering THisTrash\n");
+	
+		int argc = 4;
+		char *argv[argc];
+/*
+		argv[0] = strdup("/home/chroco/oresat/oresat-fprime/oresat-dev/build-fprime-automatic-native/bin/Linux/OreSatDev\0");
+		//argv[0] = strdup("OreSatDev\0");
+    argv[1] = strdup("can0\0");
+    argv[2] = strdup("-i\0");
+    argv[3] = strdup("7\0");
+//*/
+		
+		for(int i = 0; i < argc; ++i) {
+			argv[i] = (char *)malloc(50); 
+		}
+		argv[0] = strdup("/home/chroco/oresat/oresat-fprime/oresat-dev/build-fprime-automatic-native/bin/Linux/OreSatDev");
+    argv[1] = strdup("can0");
+    argv[2] = strdup("-i");
+    argv[3] = strdup("7");
+
+		printf("args: %s %s %s %s \n",argv[0],argv[1],argv[2],argv[3]);
+
+		int programExit = EXIT_SUCCESS;
     CO_epoll_t epMain;
 #ifndef CO_SINGLE_THREAD
-/*
     pthread_t rt_thread_id;
     int rtPriority = -1;
-//*/
 #endif
     CO_NMT_reset_cmd_t reset = CO_RESET_NOT;
     CO_ReturnError_t err;
@@ -433,17 +382,17 @@ int CANopenManager::testInit(void) {
     int opt;
     bool_t firstRun = true;
 
-    const char* CANdevice = "can0";      /* CAN device, configurable by arguments. */
-    //char* CANdevice = NULL;      /* CAN device, configurable by arguments. */
-    int16_t nodeIdFromArgs = -1; /* May be set by arguments */
+    char* CANdevice = NULL;      /* CAN device, configurable by arguments. */
+    //int16_t nodeIdFromArgs = -1; /* May be set by arguments */
+    int16_t nodeIdFromArgs = 7; /* May be set by arguments */
     bool_t rebootEnable = false; /* Configurable by arguments */
 
 #if (CO_CONFIG_STORAGE) & CO_CONFIG_STORAGE_ENABLE
 /*
     CO_storage_t storage;
     CO_storage_entry_t storageEntries[] = {
-        {.addr = &OD_PERSIST_COMM,
-         .len = sizeof(OD_PERSIST_COMM),
+        {.addr = &OD_RAM,
+         .len = sizeof(OD_RAM),
          .subIndexOD = 2,
          .attr = CO_storage_cmd | CO_storage_restore,
          .filename = {'o', 'd', '_', 'c', 'o', 'm', 'm', '.', 'p', 'e', 'r', 's', 'i', 's', 't', '\0'}},
@@ -472,20 +421,30 @@ int CANopenManager::testInit(void) {
 #define localSocketPath  NULL
 #endif
 
-    /* configure system log */
+    
+		/* configure system log */
     setlogmask(LOG_UPTO(LOG_DEBUG));                  /* LOG_DEBUG - log all messages */
-    openlog("CANopenManager", LOG_PID | LOG_PERROR, LOG_USER); /* print also to standard error */
+    openlog(argv[0], LOG_PID | LOG_PERROR, LOG_USER); /* print also to standard error */
+
+		printf("after openlog: %s %d\n", CANdevice, nodeIdFromArgs);
+    
+		/* Get program options */
 /*
-    // Get program options //
     if (argc < 2 || strcmp(argv[1], "--help") == 0) {
         printUsage(argv[0]);
         exit(EXIT_SUCCESS);
     }
-    while ((opt = getopt(argc, argv, "i:p:rc:T:s:")) != -1) {
+		
+		printf("Before getopt: %s %d\n", CANdevice, nodeIdFromArgs);
+   
+		while ((opt = getopt(argc, argv, "i:p:rc:T:s:")) != -1) {
+				printf("getopt: %d\n", opt);
         switch (opt) {
             case 'i': {
+								printf("case 'i' start: %s %d\n", CANdevice, nodeIdFromArgs);
                 long int nodeIdLong = strtol(optarg, NULL, 0);
                 nodeIdFromArgs = (nodeIdLong < 0 || nodeIdLong > 0xFF) ? 0 : (uint8_t)strtol(optarg, NULL, 0);
+								printf("case 'i' before break: %s %d\n", CANdevice, nodeIdFromArgs);
                 break;
             }
 #ifndef CO_SINGLE_THREAD
@@ -493,7 +452,7 @@ int CANopenManager::testInit(void) {
 #endif
             case 'r': rebootEnable = true; break;
 #if (CO_CONFIG_GTW) & CO_CONFIG_GTW_ASCII
-            case 'c': {
+            case 'c': d
                 const char* comm_stdio = "stdio";
                 const char* comm_local = "local-";
                 const char* comm_tcp = "tcp-";
@@ -520,6 +479,8 @@ int CANopenManager::testInit(void) {
             case 'T': socketTimeout_ms = strtoul(optarg, NULL, 0); break;
 #endif
 #if (CO_CONFIG_STORAGE) & CO_CONFIG_STORAGE_ENABLE
+//*/
+/*
             case 's': {
                 // add prefix to each storageEntries[i].filename //
                 for (uint8_t i = 0; i < storageEntriesCount; i++) {
@@ -534,43 +495,46 @@ int CANopenManager::testInit(void) {
                 }
                 break;
             }
+//*/
+/*
 #endif
             default: printUsage(argv[0]); exit(EXIT_FAILURE);
         }
     }
 //*/
 
+		printf("After getopt: %s %d\n", CANdevice, nodeIdFromArgs);
+		printf("args: %s %s %s %s \n",argv[0],argv[1],argv[2],argv[3]);
+
 //    if (optind < argc) {
-        //CANdevice = "can0";
+        CANdevice = argv[1];
         //CANdevice = argv[optind];
         CANptr.can_ifindex = if_nametoindex(CANdevice);
 //    }
+		printf("After getopt: %s %d\n", CANdevice, nodeIdFromArgs);
 
-    /* Valid NodeId is 1..127 or 0xFF(unconfigured) in case of LSSslaveEnabled */
-    /*
+		printf("After set if_index: %s %d\n", CANdevice, nodeIdFromArgs);
+    
+		/* Valid NodeId is 1..127 or 0xFF(unconfigured) in case of LSSslaveEnabled */
     if ((nodeIdFromArgs == 0 || nodeIdFromArgs > 127)
         && (!CO_isLSSslaveEnabled(CO) || nodeIdFromArgs != CO_LSS_NODE_ID_ASSIGNMENT)) {
         log_printf(LOG_CRIT, DBG_WRONG_NODE_ID, nodeIdFromArgs);
         printUsage(argv[0]);
         exit(EXIT_FAILURE);
     }
-    //*/
 
 #ifndef CO_SINGLE_THREAD
-/*
     if (rtPriority != -1
         && (rtPriority < sched_get_priority_min(SCHED_FIFO) || rtPriority > sched_get_priority_max(SCHED_FIFO))) {
         log_printf(LOG_CRIT, DBG_WRONG_PRIORITY, rtPriority);
         printUsage(argv[0]);
         exit(EXIT_FAILURE);
     }
-//*/
 #endif
 
     if (CANptr.can_ifindex == 0) {
         log_printf(LOG_CRIT, DBG_NO_CAN_DEVICE, CANdevice);
-        return -1;
-        //exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 
     log_printf(LOG_INFO, DBG_CAN_OPEN_INFO, mlStorage.pendingNodeId, "starting");
@@ -579,10 +543,9 @@ int CANopenManager::testInit(void) {
     uint32_t heapMemoryUsed = 0;
     CO_config_t* config_ptr = NULL;
 #ifdef CO_MULTIPLE_OD
-/*
-    // example usage of CO_MULTIPLE_OD (but still single OD here) //
+    /* example usage of CO_MULTIPLE_OD (but still single OD here) */
     CO_config_t co_config = {0};
-    OD_INIT_CONFIG(co_config); // helper macro from OD.h //
+    OD_INIT_CONFIG(co_config); /* helper macro from OD.h */
 #if (CO_CONFIG_LEDS) & CO_CONFIG_LEDS_ENABLE
     co_config.CNT_LEDS = 1;
 #endif
@@ -599,13 +562,11 @@ int CANopenManager::testInit(void) {
     co_config.CNT_TRACE = 1;
 #endif
     config_ptr = &co_config;
-//*/
-#endif // CO_MULTIPLE_OD //
+#endif /* CO_MULTIPLE_OD */
     CO = CO_new(config_ptr, &heapMemoryUsed);
     if (CO == NULL) {
         log_printf(LOG_CRIT, DBG_GENERAL, "CO_new(), heapMemoryUsed=", heapMemoryUsed);
-        //exit(EXIT_FAILURE);
-        return -1;
+        exit(EXIT_FAILURE);
     }
 
 #if (CO_CONFIG_STORAGE) & CO_CONFIG_STORAGE_ENABLE
@@ -622,8 +583,8 @@ int CANopenManager::testInit(void) {
 //*/
 #endif
 #ifdef CO_USE_APPLICATION
+    /* Execute optional external application code */
 /*
-    // Execute optional external application code //
     uint32_t errInfo_app_programStart = 0;
     err = app_programStart(&mlStorage.pendingBitRate, &mlStorage.pendingNodeId, &errInfo_app_programStart);
     if (err != CO_ERROR_NO) {
@@ -649,21 +610,18 @@ int CANopenManager::testInit(void) {
     /* Catch signals SIGINT and SIGTERM */
     if (signal(SIGINT, sigHandler) == SIG_ERR) {
         log_printf(LOG_CRIT, DBG_ERRNO, "signal(SIGINT, sigHandler)");
-        //exit(EXIT_FAILURE);
-        return -1;
+        exit(EXIT_FAILURE);
     }
     if (signal(SIGTERM, sigHandler) == SIG_ERR) {
         log_printf(LOG_CRIT, DBG_ERRNO, "signal(SIGTERM, sigHandler)");
-        //exit(EXIT_FAILURE);
-        return -1;
+        exit(EXIT_FAILURE);
     }
 
     /* get current time for CO_TIME_set(), since January 1, 1984, UTC. */
     struct timespec ts;
     if (clock_gettime(CLOCK_REALTIME, &ts) == -1) {
         log_printf(LOG_CRIT, DBG_GENERAL, "clock_gettime(main)", 0);
-        //exit(EXIT_FAILURE);
-        return -1;
+        exit(EXIT_FAILURE);
     }
     uint16_t time_days = (uint16_t)(ts.tv_sec / (24 * 60 * 60));
     time_days -= 5113; /* difference between Unix epoch and CANopen Epoch */
@@ -674,11 +632,9 @@ int CANopenManager::testInit(void) {
     err = CO_epoll_create(&epMain, MAIN_THREAD_INTERVAL_US);
     if (err != CO_ERROR_NO) {
         log_printf(LOG_CRIT, DBG_GENERAL, "CO_epoll_create(main), err=", err);
-        //exit(EXIT_FAILURE);
-        return -1;
+        exit(EXIT_FAILURE);
     }
 #ifndef CO_SINGLE_THREAD
-/*
     err = CO_epoll_create(&epRT, TMR_THREAD_INTERVAL_US);
     if (err != CO_ERROR_NO) {
         log_printf(LOG_CRIT, DBG_GENERAL, "CO_epoll_create(RT), err=", err);
@@ -687,14 +643,12 @@ int CANopenManager::testInit(void) {
     CANptr.epoll_fd = epRT.epoll_fd;
 #else
     CANptr.epoll_fd = epMain.epoll_fd;
-//*/
 #endif
 #if (CO_CONFIG_GTW) & CO_CONFIG_GTW_ASCII
     err = CO_epoll_createGtw(&epGtw, epMain.epoll_fd, commandInterface, socketTimeout_ms, localSocketPath);
     if (err != CO_ERROR_NO) {
         log_printf(LOG_CRIT, DBG_GENERAL, "CO_epoll_createGtw(), err=", err);
-        //exit(EXIT_FAILURE);
-        return -1;
+        exit(EXIT_FAILURE);
     }
 #endif
 
@@ -786,9 +740,11 @@ int CANopenManager::testInit(void) {
 //*/
 #endif
 #ifdef CO_USE_APPLICATION
+/*
             if (errInfo_app_programStart != 0) {
                 CO_errorReport(CO->em, CO_EM_INCONSISTENT_OBJECT_DICT, CO_EMC_DATA_SET, errInfo_app_programStart);
             }
+//*/
 #endif
 
 #if (CO_CONFIG_TRACE) & CO_CONFIG_TRACE_ENABLE
@@ -805,8 +761,7 @@ int CANopenManager::testInit(void) {
             firstRun = false;
             CO_TIME_set(CO->TIME, time_ms, time_days, TIME_STAMP_INTERVAL_MS);
 #ifndef CO_SINGLE_THREAD
-/*
-            // Create rt_thread and set priority //
+            /* Create rt_thread and set priority */
             if (pthread_create(&rt_thread_id, NULL, rt_thread, NULL) != 0) {
                 log_printf(LOG_CRIT, DBG_ERRNO, "pthread_create(rt_thread)");
                 programExit = EXIT_FAILURE;
@@ -824,13 +779,12 @@ int CANopenManager::testInit(void) {
                     continue;
                 }
             }
-//*/
 #endif
         } /* if(firstRun) */
 
 #ifdef CO_USE_APPLICATION
+        /* Execute optional external application code */
 /*
-        // Execute optional external application code //
         app_communicationReset(CO);
 //*/
 #endif
@@ -844,7 +798,7 @@ int CANopenManager::testInit(void) {
             if (err == CO_ERROR_OD_PARAMETERS) {
                 log_printf(LOG_CRIT, DBG_OD_ENTRY, errInfo);
             } else {
-                log_printf(LOG_CRIT, DBG_CAN_OPEN, "CO_CANopenInitPDO()", err);
+               // log_printf(LOG_CRIT, DBG_CAN_OPEN, "CO_CANopenInitPDO()", err);
             }
             programExit = EXIT_FAILURE;
             CO_endProgram = 1;
@@ -862,9 +816,7 @@ int CANopenManager::testInit(void) {
             /* loop for normal program execution ******************************************/
             CO_epoll_wait(&epMain);
 #ifdef CO_SINGLE_THREAD
-/*
             CO_epoll_processRT(&epMain, CO, false);
-//*/
 #endif
 #if (CO_CONFIG_GTW) & CO_CONFIG_GTW_ASCII
             CO_epoll_processGtw(&epGtw, CO, &epMain);
@@ -873,15 +825,15 @@ int CANopenManager::testInit(void) {
             CO_epoll_processLast(&epMain);
 
 #ifdef CO_USE_APPLICATION
+            /* Execute optional external application code */
 /*
-            // Execute optional external application code //
             app_programAsync(CO, epMain.timeDifference_us);
 //*/
 #endif
 
 #if (CO_CONFIG_STORAGE) & CO_CONFIG_STORAGE_ENABLE
+            /* don't save more often than interval */
 /*
-            // don't save more often than interval //
             if (storageIntervalTimer < CO_STORAGE_AUTO_INTERVAL) {
                 storageIntervalTimer += epMain.timeDifference_us;
             } else {
@@ -905,17 +857,15 @@ int CANopenManager::testInit(void) {
     /* join threads */
     CO_endProgram = 1;
 #ifndef CO_SINGLE_THREAD
-/*
     if (pthread_join(rt_thread_id, NULL) != 0) {
         log_printf(LOG_CRIT, DBG_ERRNO, "pthread_join()");
         exit(EXIT_FAILURE);
     }
-//*/
 #endif
 #ifdef CO_USE_APPLICATION
+    /* Execute optional external application code */
 /*
-    // Execute optional external application code //
-    app_programEnd();
+		app_programEnd();
 //*/
 #endif
 
@@ -927,9 +877,7 @@ int CANopenManager::testInit(void) {
 
     /* delete objects from memory */
 #ifndef CO_SINGLE_THREAD
-/*
     CO_epoll_close(&epRT);
-//*/
 #endif
     CO_epoll_close(&epMain);
 #if (CO_CONFIG_GTW) & CO_CONFIG_GTW_ASCII
@@ -945,26 +893,21 @@ int CANopenManager::testInit(void) {
         sync();
         if (reboot(LINUX_REBOOT_CMD_RESTART) != 0) {
             log_printf(LOG_CRIT, DBG_ERRNO, "reboot()");
-            //exit(EXIT_FAILURE);
-            return -1;
+            exit(EXIT_FAILURE);
         }
     }
 
-    //exit(programExit);
-    return 0;
-//}
-
+    exit(programExit);
 }
 
 #ifndef CO_SINGLE_THREAD
 /*******************************************************************************
  * Realtime thread for CAN receive and threadTmr
  ******************************************************************************/
-/*
 static void*
 rt_thread(void* arg) {
     (void)arg;
-    // Endless loop //
+    /* Endless loop */
     while (CO_endProgram == 0) {
 
         CO_epoll_wait(&epRT);
@@ -972,7 +915,7 @@ rt_thread(void* arg) {
         CO_epoll_processLast(&epRT);
 
 #if (CO_CONFIG_TRACE) & CO_CONFIG_TRACE_ENABLE
-        // Monitor variables with trace objects //
+        /* Monitor variables with trace objects */
         CO_time_process(&CO_time);
         for (i = 0; i < OD_traceEnable && i < co->CNT_TRACE; i++) {
             CO_trace_process(CO->trace[i], *CO_time.epochTimeOffsetMs);
@@ -980,18 +923,186 @@ rt_thread(void* arg) {
 #endif
 
 #ifdef CO_USE_APPLICATION
-        // Execute optional external application code //
-        app_programRt(CO, epRT.timeDifference_us);
+        /* Execute optional external application code */
+/*
+				app_programRt(CO, epRT.timeDifference_us);
+//*/
 #endif
     }
 
     return NULL;
 }
-//*/
 #endif
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool CANopenManager::canopennode_is_running(void) {
+	return reset == CO_RESET_NOT;
+}
+
+int CANopenManager::canopennode_init(uint16_t bit_rate, uint8_t node_id) {
+
+	return 0;
+}
+
+void CANopenManager::canopennode_stop(void) {
+/*
+	// stop threads //
+	reset = CO_RESET_QUIT;
+	//k_thread_join(&co_rt_thread_data, K_MSEC(1));
+	//k_thread_join(&co_main_thread_data, K_MSEC(1));
+  m_co_mainTask.join();
+  m_co_rtTask.join();
+	for (int i = 0; i < OD_CNT_SDO_SRV; i++) {
+    m_co_sdoServerTask[i].resume();
+    m_co_sdoServerTask[i].join();
+		//k_thread_resume(co_sdo_server_tids[i]);
+		//k_thread_join(&co_sdo_server_threads_data[i], K_MSEC(1));
+	}
+
+	// delete objects from memory //
+  // TODO: fix
+	if (CANptr != NULL) {
+		CO_CANsetConfigurationMode((void *)CANptr);
+	}
+  ////
+	CO_delete(CO);
+
+	printf("CANopenNode finished\n");
+	//*/
+}
+
+/*
+void CANopenManager::process_cb(void *ptr) {
+    FW_ASSERT(ptr != nullptr);
+    TaskObject_t *toPtr = reinterpret_cast<TaskObject_t*>(ptr);
+    toPtr->comPtr->m_co_sdoServerTask[toPtr->sdoTask].resume();
+}
+//*/
+
+void CANopenManager::co_sdo_server_thread(void *ptr) {
+    FW_ASSERT(ptr != nullptr);
+/*
+    TaskObject_t *toPtr = reinterpret_cast<TaskObject_t*>(ptr);
+
+    CO_SDOserver_t *SDOserver = (CO_SDOserver_t *)toPtr->comPtr->SDOserver;
+    uint32_t elapsed_us = -1;
+    struct timespec start, stop;
+    
+    // Register the callback function to wake up thread when message received //
+    CO_SDOserver_initCallbackPre(SDOserver, (void *)&toPtr, CANopenManager::process_cb);
+
+    while (toPtr->comPtr->reset == CO_RESET_NOT) {
+      clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
+      CO_SDOserver_process(SDOserver, true, elapsed_us, NULL);
+      toPtr->comPtr->m_co_sdoServerTask[toPtr->sdoTask].suspend();
+      clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &stop);
+      elapsed_us = (stop.tv_sec - start.tv_sec) * 1e6 + (stop.tv_nsec - start.tv_nsec) / 1e3;    // in microseconds
+    }
+
+    CO_SDOserver_initCallbackPre(SDOserver, NULL, NULL);
+//*/
+}
+
+void CANopenManager::co_main_thread(void *ptr) {
+    FW_ASSERT(ptr != nullptr);
+/*    
+		CANopenManager *com = reinterpret_cast<CANopenManager*>(ptr);
+    CO_t* CO = com->CO;
+    
+    uint32_t elapsed_us = 1000U;
+
+    com->reset = CO_RESET_NOT;
+    printf("CANopenNode - Running...\n");
+
+    while (com->reset == CO_RESET_NOT) {
+      //k_sleep(K_FOREVER);
+      com->m_co_mainTask.suspend();
+      com->reset = CO_process(CO, false, elapsed_us, NULL);
+    }
+//*/
+}
+
+void CANopenManager::co_rt_thread(void *ptr) {
+    FW_ASSERT(ptr != nullptr);
+/*    
+    CANopenManager *com = reinterpret_cast<CANopenManager*>(ptr);
+    CO_t* CO = com->CO;
+      
+    uint32_t elapsed_us = 1000U;
+    bool syncWas;
+
+    while (com->reset == CO_RESET_NOT) {
+        //k_sleep(K_FOREVER);
+        com->m_co_rtTask.suspend();
+        syncWas = false;
+
+        CO_LOCK_OD(CO->CANmodule);
+        if (!CO->nodeIdUnconfigured && CO->CANmodule->CANnormal) {
+#if (CO_CONFIG_SYNC) & CO_CONFIG_SYNC_ENABLE
+        syncWas = CO_process_SYNC(CO, elapsed_us, NULL);
+#endif
+#if (CO_CONFIG_PDO) & CO_CONFIG_RPDO_ENABLE
+        CO_process_RPDO(CO, syncWas, elapsed_us, NULL);
+#endif
+#if (CO_CONFIG_PDO) & CO_CONFIG_TPDO_ENABLE
+        CO_process_TPDO(CO, syncWas, elapsed_us, NULL);
+#endif
+        }
+        
+        CO_UNLOCK_OD(CO->CANmodule);
+	  }
+//*/
+}
+
+void CANopenManager::co_timer_thread(void *ptr) {
+/*    
+    FW_ASSERT(ptr != nullptr);
+    CANopenManager *com = reinterpret_cast<CANopenManager*>(ptr);
+    while(1) {
+      //com->m_co_mainTask.resume();
+      //com->m_co_rtTask.resume();
+      //printf("hi");
+      //fflush(stdout);
+      //Os::Task::delay(Fw::TimeInterval(1,0));
+      Os::Task::delay(Fw::TimeInterval(0,1000));
+    }
+//*/
+}
+
+void CANopenManager::testTaskEntry(void* ptr) {
+    FW_ASSERT(ptr != nullptr);
+    CANopenManager *com = reinterpret_cast<CANopenManager*>(ptr);
+    
+		for(; !com->m_quitTask; ++com->m_loopCounter)
+    {
+        Os::Task::delay(Fw::TimeInterval(0, 50000));
+    }
+}
+
+void CANopenManager::CANopenTaskEntry(void* ptr) {
+    FW_ASSERT(ptr != nullptr);
+    CANopenManager *com = reinterpret_cast<CANopenManager*>(ptr);
+		testThisTrash();
+}
+
+/*
+int CANopenManager::testInit(void) {
+
+	return 0;
+}
+//*/
 
 /* timer thread executes in constant intervals ********************************/
 void CANopenManager::tmrTask_thread(void* ptr) {
+/*
     FW_ASSERT(ptr != nullptr);
     
     CANopenManager *com = reinterpret_cast<CANopenManager*>(ptr);
@@ -999,7 +1110,8 @@ void CANopenManager::tmrTask_thread(void* ptr) {
     
     for (;;) {
         CO_LOCK_OD(com->CO->CANmodule);
-//*
+//*/    
+/*
         if (!com->CO->nodeIdUnconfigured && com->CO->CANmodule->CANnormal) {
             bool_t syncWas = false;
             // get time difference since last function call 
@@ -1017,9 +1129,11 @@ void CANopenManager::tmrTask_thread(void* ptr) {
 
             // Further I/O or nonblocking application code may go here. 
 //*/    
+/*    
         CO_UNLOCK_OD(com->CO->CANmodule);
         }
     }
+//*/    
 }
 
 /* CAN interrupt function executes on received CAN message ********************/
@@ -1035,13 +1149,14 @@ void CANopenManager::start(
     Os::Task::ParamType taskId
 )
 {
-  /*
+  //*
     Os::TaskString task("CANopenManager");
     Os::Task::Arguments arguments(task, CANopenTaskEntry, this, priority, stackSize, cpuAffinity, taskId);
     //Os::Task::Arguments arguments(task, testTaskEntry, this, priority, stackSize, cpuAffinity, taskId);
     Os::Task::Status stat = this->m_coTask.start(arguments);
     FW_ASSERT(stat == Os::Task::OP_OK, stat);
-    
+  //*/
+  /*
     Os::TaskString timerTask("TimerTask");
     Os::Task::Arguments timerArguments(timerTask, tmrTask_thread, this, priority, stackSize, cpuAffinity, taskId);
     Os::Task::Status timerStat = this->m_timerTask.start(timerArguments);
@@ -1049,7 +1164,8 @@ void CANopenManager::start(
   //*/
     printf("entering start\n");
    // canopennode_init(1000, 13);
-    testInit();
+   // testInit();
+   // testThisTrash();
   /*
 	  for (size_t i = 0; i < OD_CNT_SDO_SRV; i++) {
       Os::TaskString sdoServerTask("SDOServerTask");
@@ -1086,11 +1202,44 @@ void CANopenManager::quitCANopenManager() {
     this->m_quitCANopenManager = true;
 }
 
-
 }
+
 
 /* Message logging function */
 //*
+void
+log_printf(int priority, const char* format, ...) {
+    va_list ap;
+
+    va_start(ap, format);
+    vsyslog(priority, format, ap);
+    va_end(ap);
+
+#if (CO_CONFIG_GTW) & CO_CONFIG_GTW_ASCII_LOG
+    if (Components::CO != NULL) {
+        char buf[200];
+        time_t timer;
+        struct tm* tm_info;
+        size_t len;
+
+        timer = time(NULL);
+        tm_info = localtime(&timer);
+        len = strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S: ", tm_info);
+
+        va_start(ap, format);
+        vsnprintf(buf + len, sizeof(buf) - len - 2, format, ap);
+        va_end(ap);
+        strcat(buf, "\r\n");
+        CO_GTWA_log_print(Components::CO->gtwa, buf);
+    }
+#endif
+}
+//*/
+
+
+
+/* Message logging function */
+/*
 void log_printf(int priority, const char* format, ...) {
     va_list ap;
 

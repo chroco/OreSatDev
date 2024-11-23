@@ -33,67 +33,6 @@ extern "C" {
 #include <linux/reboot.h>
 #include <sys/reboot.h>
 
-//#define log_printf(macropar_message, ...) printf(macropar_message, ##__VA_ARGS__)
-
-/* default values for CO_CANopenInit() */
-/*
-#define NMT_CONTROL                                                                                                    \
-    CO_NMT_STARTUP_TO_OPERATIONAL                                                                                      \
-    | CO_NMT_ERR_ON_ERR_REG | CO_ERR_REG_GENERIC_ERR | CO_ERR_REG_COMMUNICATION
-#define FIRST_HB_TIME        500
-#define SDO_SRV_TIMEOUT_TIME 1000
-#define SDO_CLI_TIMEOUT_TIME 500
-#define SDO_CLI_BLOCK        false
-#define OD_STATUS_BITS       NULL
-//*/
-
-/* Interval of mainline and real-time thread in microseconds */
-#ifndef MAIN_THREAD_INTERVAL_US
-#define MAIN_THREAD_INTERVAL_US 100000
-#endif
-#ifndef TMR_THREAD_INTERVAL_US
-#define TMR_THREAD_INTERVAL_US 1000
-#endif
-
-/* default values for CO_CANopenInit() */
-#ifndef NMT_CONTROL
-#define NMT_CONTROL                                                                                                    \
-    CO_NMT_STARTUP_TO_OPERATIONAL                                                                                      \
-    | CO_NMT_ERR_ON_ERR_REG | CO_ERR_REG_GENERIC_ERR | CO_ERR_REG_COMMUNICATION
-#endif
-#ifndef FIRST_HB_TIME
-#define FIRST_HB_TIME 500
-#endif
-#ifndef SDO_SRV_TIMEOUT_TIME
-#define SDO_SRV_TIMEOUT_TIME 1000
-#endif
-#ifndef SDO_CLI_TIMEOUT_TIME
-#define SDO_CLI_TIMEOUT_TIME 500
-#endif
-#ifndef SDO_CLI_BLOCK
-#define SDO_CLI_BLOCK false
-#endif
-#ifndef OD_STATUS_BITS
-#define OD_STATUS_BITS NULL
-#endif
-/* CANopen gateway enable switch for CO_epoll_processMain() */
-#ifndef GATEWAY_ENABLE
-#define GATEWAY_ENABLE true
-#endif
-/* Interval for time stamp message in milliseconds */
-#ifndef TIME_STAMP_INTERVAL_MS
-#define TIME_STAMP_INTERVAL_MS 10000
-#endif
-
-/* Definitions for application specific data storage objects */
-#ifndef CO_STORAGE_APPLICATION
-#define CO_STORAGE_APPLICATION
-#endif
-/* Interval for automatic data storage in microseconds */
-#ifndef CO_STORAGE_AUTO_INTERVAL
-#define CO_STORAGE_AUTO_INTERVAL 60000000
-#endif
-
 #define LOG_EMERGENCY     0
 #define LOG_ALERT         1
 #define LOG_CRITICAL      2
@@ -103,16 +42,6 @@ extern "C" {
 #define LOG_INFORMATIONAL 6
 
 namespace Components {
-    /* Data block for mainline data, which can be stored to non-volatile memory */
-    typedef struct {
-        /* Pending CAN bit rate, can be set by argument or LSS slave. */
-        uint16_t pendingBitRate;
-        /* Pending CANopen NodeId, can be set by argument or LSS slave. */
-        uint8_t pendingNodeId;
-    } mainlineStorage_t;
-
-  //enum Log {LOG_EMERGENCY, LOG_ALERT, LOG_CRITICAL, LOG_ERROR, LOG_WARNING, LOG_NOTICE, LOG_INFORMATIONAL};
-
   class CANopenManager :
     public CANopenManagerComponentBase
   {
@@ -130,32 +59,13 @@ namespace Components {
 
       //! Destroy CANopenManager object
       ~CANopenManager();
-
-      void startTask(
-          void
-//          NATIVE_INT_TYPE priority, NATIVE_INT_TYPE stackSize, NATIVE_INT_TYPE cpuAffinity = -1
-      );
-      //*
+     
       void start(
-      //    void
-      /*
-          Os::Task::ParamType,
-          Os::Task::ParamType,
-          Os::Task::TASK_DEFAULT, // Default CPU
-          Os::Task::ParamType
-       //*/
          Os::Task::ParamType priority = Os::Task::TASK_DEFAULT,
          Os::Task::ParamType stackSize = Os::Task::TASK_DEFAULT,
          Os::Task::ParamType cpuAffinity = Os::Task::TASK_DEFAULT,
          Os::Task::ParamType taskId = Os::Task::TASK_DEFAULT
-       /*
-         static_cast<Os::Task::ParamType>(Priorities::OreSatDev_coMgr),
-         static_cast<Os::Task::ParamType>(StackSizes::OreSatDev_coMgr),
-         Os::Task::TASK_DEFAULT, // Default CPU
-         static_cast<Os::Task::ParamType>(TaskIds::OreSatDev_coMgr)
-       //*/
-      );
-      //*/
+       );
 
     PRIVATE:
       bool m_quitCANopenManager;
@@ -182,17 +92,18 @@ namespace Components {
 
       Os::Task::ParamType m_co_sdoServerTaskId;
 
-      static void process_cb(void *ptr);
-
       void quitCANopenManager(void);
       
       uint16_t m_loopCounter;
 
       Os::Task m_coTask;
       Os::Task m_timerTask;
+      
+			CO_NMT_reset_cmd_t reset;
+     
+			/*
       CO_SDOserver_t *SDOserver;
       CO_t* CO;                 // CANopen object 
-      CO_NMT_reset_cmd_t reset;
       uint32_t heapMemoryUsed;
       //void *CANptr;             // CAN module address 
       CO_CANptrSocketCan_t CANptr;             // CAN module address 
@@ -200,7 +111,9 @@ namespace Components {
       //uint8_t activeNodeId;     // Copied from CO_pendingNodeId in the communication reset section
       uint16_t pendingBitRate;  // read from dip switches or nonvolatile memory, configurable by LSS slave
       CO_config_t *config_ptr;
-     
+      //*/
+
+
       //int startCANopenManager(void);
       // ----------------------------------------------------------------------
       // Handler implementations for commands
