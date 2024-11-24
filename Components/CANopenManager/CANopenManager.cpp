@@ -19,12 +19,12 @@ namespace Components {
       CANopenManagerComponentBase(compName),
         m_quitCANopenManager(false),
         m_quitTask(false),
-        m_loopCounter(0)
+        m_loopCounter(0)//,
+        //CO(NULL)
        // CANptr({0}),
         //pendingBitRate(0),
         //SDOserver(NULL),
         //config_ptr(NULL),
-        //CO(NULL)
   {
       printf("Entering CANopenManager Constructor\n");
       //canopennode_init(0, 13);
@@ -426,7 +426,7 @@ testThisTrash() {
     setlogmask(LOG_UPTO(LOG_DEBUG));                  /* LOG_DEBUG - log all messages */
     openlog(argv[0], LOG_PID | LOG_PERROR, LOG_USER); /* print also to standard error */
 
-		printf("after openlog: %s %d\n", CANdevice, nodeIdFromArgs);
+		printf("openlog: %s %d\n", CANdevice, nodeIdFromArgs);
     
 		/* Get program options */
 /*
@@ -511,9 +511,9 @@ testThisTrash() {
         //CANdevice = argv[optind];
         CANptr.can_ifindex = if_nametoindex(CANdevice);
 //    }
-		printf("After getopt: %s %d\n", CANdevice, nodeIdFromArgs);
+//		printf("After getopt: %s %d\n", CANdevice, nodeIdFromArgs);
 
-		printf("After set if_index: %s %d\n", CANdevice, nodeIdFromArgs);
+//		printf("After set if_index: %s %d\n", CANdevice, nodeIdFromArgs);
     
 		/* Valid NodeId is 1..127 or 0xFF(unconfigured) in case of LSSslaveEnabled */
     if ((nodeIdFromArgs == 0 || nodeIdFromArgs > 127)
@@ -537,15 +537,16 @@ testThisTrash() {
         exit(EXIT_FAILURE);
     }
 
-    log_printf(LOG_INFO, DBG_CAN_OPEN_INFO, mlStorage.pendingNodeId, "starting");
+    //log_printf(LOG_INFO, DBG_CAN_OPEN_INFO, mlStorage.pendingNodeId, "starting");
 
     /* Allocate memory for CANopen objects */
     uint32_t heapMemoryUsed = 0;
     CO_config_t* config_ptr = NULL;
+/*
 #ifdef CO_MULTIPLE_OD
-    /* example usage of CO_MULTIPLE_OD (but still single OD here) */
+    // example usage of CO_MULTIPLE_OD (but still single OD here) //
     CO_config_t co_config = {0};
-    OD_INIT_CONFIG(co_config); /* helper macro from OD.h */
+    OD_INIT_CONFIG(co_config); // helper macro from OD.h //
 #if (CO_CONFIG_LEDS) & CO_CONFIG_LEDS_ENABLE
     co_config.CNT_LEDS = 1;
 #endif
@@ -562,12 +563,16 @@ testThisTrash() {
     co_config.CNT_TRACE = 1;
 #endif
     config_ptr = &co_config;
-#endif /* CO_MULTIPLE_OD */
+#endif // CO_MULTIPLE_OD //
+//*/
     CO = CO_new(config_ptr, &heapMemoryUsed);
     if (CO == NULL) {
         log_printf(LOG_CRIT, DBG_GENERAL, "CO_new(), heapMemoryUsed=", heapMemoryUsed);
         exit(EXIT_FAILURE);
-    }
+    } else {
+			
+        log_printf(LOG_INFO,DBG_CO_NEW_SUCCESS, "CO_new(), heapMemoryUsed=", heapMemoryUsed);
+		}
 
 #if (CO_CONFIG_STORAGE) & CO_CONFIG_STORAGE_ENABLE
 /*
@@ -606,6 +611,8 @@ testThisTrash() {
     if (mlStorage.pendingNodeId < 1 || mlStorage.pendingNodeId > 127) {
         mlStorage.pendingNodeId = CO_LSS_NODE_ID_ASSIGNMENT;
     }
+    
+		log_printf(LOG_INFO, DBG_CAN_OPEN_INFO, mlStorage.pendingNodeId, " starting");
 
     /* Catch signals SIGINT and SIGTERM */
     if (signal(SIGINT, sigHandler) == SIG_ERR) {
@@ -674,7 +681,9 @@ testThisTrash() {
             programExit = EXIT_FAILURE;
             CO_endProgram = 1;
             continue;
-        }
+        } else {
+            log_printf(LOG_CRIT, DBG_CAN_OPEN_SUCCESS, "CO_CANinit()", err);
+				}
 
         CO_LSS_address_t lssAddress = {.identity = {.vendorID = OD_RAM.x1018_identity.vendor_id,
                                                     .productCode = OD_RAM.x1018_identity.product_code,
@@ -690,6 +699,8 @@ testThisTrash() {
 
         CO_activeNodeId = mlStorage.pendingNodeId;
         errInfo = 0;
+
+				printf("CO_activeNodeId: %d\n", CO_activeNodeId);
 
         err = CO_CANopenInit(CO,                   /* CANopen object */
                              NULL,                 /* alternate NMT */
@@ -712,6 +723,8 @@ testThisTrash() {
             CO_endProgram = 1;
             continue;
         }
+				
+				printf("CO_CANopenInit(): success  %d\n", err);
 
         /* initialize part of threadMain and callbacks */
         CO_epoll_initCANopenMain(&epMain, CO);
@@ -798,7 +811,7 @@ testThisTrash() {
             if (err == CO_ERROR_OD_PARAMETERS) {
                 log_printf(LOG_CRIT, DBG_OD_ENTRY, errInfo);
             } else {
-               // log_printf(LOG_CRIT, DBG_CAN_OPEN, "CO_CANopenInitPDO()", err);
+                log_printf(LOG_CRIT, DBG_CAN_OPEN, "CO_CANopenInitPDO()", err);
             }
             programExit = EXIT_FAILURE;
             CO_endProgram = 1;
@@ -1236,35 +1249,3 @@ log_printf(int priority, const char* format, ...) {
 }
 //*/
 
-
-
-/* Message logging function */
-/*
-void log_printf(int priority, const char* format, ...) {
-    va_list ap;
-
-    va_start(ap, format);
-    vsyslog(priority, format, ap);
-    va_end(ap);
-
-#if (CO_CONFIG_GTW) & CO_CONFIG_GTW_ASCII_LOG
-    if (Components::COptr != NULL) {
-        char buf[200];
-        time_t timer;
-        struct tm* tm_info;
-        size_t len;
-
-        timer = time(NULL);
-        tm_info = localtime(&timer);
-        len = strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S: ", tm_info);
-
-        va_start(ap, format);
-        vsnprintf(buf + len, sizeof(buf) - len - 2, format, ap);
-        va_end(ap);
-        strcat(buf, "\r\n");
-        CO_GTWA_log_print(Components::COptr->gtwa, buf);
-    }
-#endif
-    fflush(stdout);
-}
-//*/

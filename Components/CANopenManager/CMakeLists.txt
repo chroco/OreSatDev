@@ -17,6 +17,7 @@ set(CARD "c3")
 set(ORESAT_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../../..")
 set(DRV_SRC     "${ORESAT_ROOT}/CANopenLinux")
 set(CANOPEN_SRC "${ORESAT_ROOT}/CANopenLinux/CANopenNode")
+set(OD_SRC 		"${CMAKE_CURRENT_LIST_DIR}/../../Components/CANopenManager/")
 
 #cmake_print_variables(ORESAT_ROOT)
 #cmake_print_variables(DRV_SRC    )
@@ -24,34 +25,30 @@ set(CANOPEN_SRC "${ORESAT_ROOT}/CANopenLinux/CANopenNode")
 
 find_package (Python3 COMPONENTS Interpreter)
 execute_process(
-  COMMAND "${oresat_root}/oresat-venv/bin/activate; 
-  bash -c oresat-configs fw-files ${CARD} -d gen "
+#	COMMAND "bash -C oresat-configs fw-files ${CARD} -d gen"
+		COMMAND " ${ORESAT_ROOT}/oresat-venv/bin/activate; oresat-configs fw-files ${CARD} -d gen"
 )
+
+	#set (cmd "oresat-configs")
+#set (arg "fw-files ${CARD} -d gen")
+#set (arg "oresat-configs fw-files ${CARD} -d gen")
+#message(STATUS "cmd: ${cmd}")
+#execute_process(COMMAND ${cmd} #${arg}
+#	WORKING_DIRECTORY .
+#	#WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+#	RESULT_VARIABLE result
+#	OUTPUT_VARIABLE output
+#)
+
+#message(STATUS "result:[${result}]:output[${output}]")
 
 include_directories(
-      ${DRV_SRC}
-      ${CANOPEN_SRC}
-      ../../build-fprime-automatic-native/gen
+			${DRV_SRC}
+			${CANOPEN_SRC}
+			#			../../build-fprime-automatic-native/gen
+			#./gen
+			${OD_SRC}
 )
-
-#  set(SOURCE_FILES
-#   ${CMAKE_CURRENT_LIST_DIR}/CANopenManager.fpp
-#   ${CMAKE_CURRENT_LIST_DIR}/CANopenManager.cpp
-#   ${CANOPEN_SRC}/301/CO_ODinterface.c
-#   ${CANOPEN_SRC}/301/CO_NMT_Heartbeat.c
-#   ${CANOPEN_SRC}/301/CO_HBconsumer.c
-#   ${CANOPEN_SRC}/301/CO_Emergency.c
-#   ${CANOPEN_SRC}/301/CO_SDOserver.c
-#   ${CANOPEN_SRC}/301/CO_TIME.c
-#   ${CANOPEN_SRC}/301/CO_SYNC.c
-#   ${CANOPEN_SRC}/301/CO_PDO.c
-#   ${CANOPEN_SRC}/303/CO_LEDs.c
-#   ${CANOPEN_SRC}/305/CO_LSSslave.c
-#   ${CANOPEN_SRC}/storage/CO_storage.c
-#   ${CANOPEN_SRC}/CANopen.c
-#   ${DRV_SRC}/CO_driver.c
-#   ../../build-fprime-automatic-native/gen/OD.c
-# )
 
 set(SOURCE_FILES
     ${CMAKE_CURRENT_LIST_DIR}/CANopenManager.fpp
@@ -80,18 +77,38 @@ set(SOURCE_FILES
     ${CANOPEN_SRC}/storage/CO_storage.c
     ${CANOPEN_SRC}/extra/CO_trace.c
     ${CANOPEN_SRC}/CANopen.c
+		${OD_SRC}/OD.c
     #${APPL_SRC}/OD.c
     #${DRV_SRC}/CO_main_basic.c
-    ../../build-fprime-automatic-native/gen/OD.c
+		#../../build-fprime-automatic-native/gen/OD.c
+		#${GEN_SRC}/OD.c
 )
 
 add_compile_options(
     -std=gnu99
     -pthread
-    #-DCO_SINGLE_THREAD
     #  -std=c++11
     -g
 )
+
+#  set(SOURCE_FILES
+#   ${CMAKE_CURRENT_LIST_DIR}/CANopenManager.fpp
+#   ${CMAKE_CURRENT_LIST_DIR}/CANopenManager.cpp
+#   ${CANOPEN_SRC}/301/CO_ODinterface.c
+#   ${CANOPEN_SRC}/301/CO_NMT_Heartbeat.c
+#   ${CANOPEN_SRC}/301/CO_HBconsumer.c
+#   ${CANOPEN_SRC}/301/CO_Emergency.c
+#   ${CANOPEN_SRC}/301/CO_SDOserver.c
+#   ${CANOPEN_SRC}/301/CO_TIME.c
+#   ${CANOPEN_SRC}/301/CO_SYNC.c
+#   ${CANOPEN_SRC}/301/CO_PDO.c
+#   ${CANOPEN_SRC}/303/CO_LEDs.c
+#   ${CANOPEN_SRC}/305/CO_LSSslave.c
+#   ${CANOPEN_SRC}/storage/CO_storage.c
+#   ${CANOPEN_SRC}/CANopen.c
+#   ${DRV_SRC}/CO_driver.c
+#   ../../build-fprime-automatic-native/gen/OD.c
+# )
 
 #  set(SOURCE_FILES
 #   "${CMAKE_CURRENT_LIST_DIR}/CANopenManager.fpp"

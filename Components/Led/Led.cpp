@@ -60,7 +60,7 @@ namespace Components {
     FW_ASSERT((isValid != Fw::ParamValid::INVALID) && (isValid != Fw::ParamValid::UNINIT),
               static_cast<FwAssertArgType>(isValid));
 
-    printf("wtf");
+    //printf("wtf");
     fflush(stdout);
     // Only perform actions when set to blinking
     if (this->m_blinking && (interval != 0)) {

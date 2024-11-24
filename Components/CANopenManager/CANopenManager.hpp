@@ -33,6 +33,10 @@ extern "C" {
 #include <linux/reboot.h>
 #include <sys/reboot.h>
 
+#define DBG_CO_NEW_SUCCESS			"(%s) Success: %s%d", __func__
+#define DBG_CAN_OPEN_SUCCESS		"(%s) Success: %s%d", __func__
+
+/*
 #define LOG_EMERGENCY     0
 #define LOG_ALERT         1
 #define LOG_CRITICAL      2
@@ -40,6 +44,7 @@ extern "C" {
 #define LOG_WARNING       4
 #define LOG_NOTICE        5
 #define LOG_INFORMATIONAL 6
+//*/
 
 namespace Components {
   class CANopenManager :
@@ -70,6 +75,9 @@ namespace Components {
     PRIVATE:
       bool m_quitCANopenManager;
       bool m_quitTask;
+
+			/* CANopen object */
+			//CO_t* CO;// = NULL;
 
       int testInit(void);
       int canopennode_init(uint16_t, uint8_t);

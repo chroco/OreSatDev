@@ -3,10 +3,15 @@ ARCH= arm-hf-linux
 HOST= debian 
 IP= 192.168.13.5
 MAKEFLAGS += --silent
+ORESAT_ROOT= ../..
+CARD= c3
 
 .PHONY: all impl gds xc cp
 
 all:
+#	echo "bash -c oresat-configs fw-files $(CARD) -d gen"
+#	bash -c oresat-configs fw-files $(CARD) -d gen
+	#. $(ORESAT_ROOT)/oresat-venv/bin/activate; oresat-configs fw-files $(CARD) -d Components/CANopenManager/
 	fprime-util build
 
 impl:
