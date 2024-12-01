@@ -1,14 +1,25 @@
 #ifndef OD_H
 #define OD_H
 
+#include <assert.h>
+
+#ifdef __cplusplus
+#ifndef _Static_assert
+#define _Static_assert static_assert
+#endif
+#endif
+
+#define STATIC_ASSERT(expression) _Static_assert((expression), "(" #expression ") failed")
+
 #define OD_CNT_NMT 1
-#define OD_CNT_EM 1
-#define OD_CNT_SYNC 1
-#define OD_CNT_EM_PROD 1
 #define OD_CNT_HB_PROD 1
-#define OD_CNT_HB_CONS 0
+#define OD_CNT_HB_CONS 1
+#define OD_CNT_EM 1
+#define OD_CNT_EM_PROD 1
 #define OD_CNT_SDO_SRV 1
 #define OD_CNT_SDO_CLI 1
+#define OD_CNT_TIME 0
+#define OD_CNT_SYNC 1
 #define OD_CNT_RPDO 80
 #define OD_CNT_TPDO 7
 
@@ -38,20 +49,21 @@ typedef struct {
     uint8_t x1019_synchronous_counter_overflow_value;
     struct {
         uint8_t highest_index_supported;
-        uint32_t status;
+        uint8_t command[1];
+        uint8_t status;
+        uint8_t reply[1];
     } x1023_os_command;
     struct {
         uint8_t highest_index_supported;
         uint32_t cob_id_client_to_server;
         uint32_t cob_id_server_to_client;
-        uint32_t node_id_od_sdo_client;
+        uint8_t node_id_od_sdo_client;
     } x1200_sdo_server_parameter;
     struct {
         uint8_t highest_index_supported;
         uint32_t cob_id_client_to_server;
         uint32_t cob_id_server_to_client;
-        uint8_t node_id_od_sdo_client;
-        //uint32_t node_id_od_sdo_client;
+        uint8_t node_id_of_sdo_server;
     } x1280_sdo_client_parameter;
     struct {
         uint8_t highest_index_supported;
@@ -774,40 +786,43 @@ typedef struct {
         uint32_t mapping_object_1;
         uint32_t mapping_object_2;
         uint32_t mapping_object_3;
+        uint32_t mapping_object_4;
+        uint32_t mapping_object_5;
+        uint32_t mapping_object_6;
     } x1622_rpdo_35_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
         uint32_t mapping_object_2;
-        uint32_t mapping_object_3;
     } x1623_rpdo_36_mapping_parameters;
-    struct {
-        uint8_t highest_index_supported;
-        uint32_t mapping_object_1;
-    } x1624_rpdo_37_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
         uint32_t mapping_object_2;
         uint32_t mapping_object_3;
+        uint32_t mapping_object_4;
+    } x1624_rpdo_37_mapping_parameters;
+    struct {
+        uint8_t highest_index_supported;
+        uint32_t mapping_object_1;
     } x1625_rpdo_38_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
         uint32_t mapping_object_2;
         uint32_t mapping_object_3;
+        uint32_t mapping_object_4;
+        uint32_t mapping_object_5;
+        uint32_t mapping_object_6;
     } x1626_rpdo_39_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
         uint32_t mapping_object_2;
-        uint32_t mapping_object_3;
     } x1627_rpdo_40_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
-        uint32_t mapping_object_2;
-        uint32_t mapping_object_3;
     } x1628_rpdo_41_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
@@ -829,16 +844,17 @@ typedef struct {
         uint32_t mapping_object_1;
         uint32_t mapping_object_2;
         uint32_t mapping_object_3;
+        uint32_t mapping_object_4;
     } x162C_rpdo_45_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
-        uint32_t mapping_object_2;
     } x162D_rpdo_46_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
         uint32_t mapping_object_2;
+        uint32_t mapping_object_3;
     } x162E_rpdo_47_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
@@ -849,18 +865,18 @@ typedef struct {
     struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
-        uint32_t mapping_object_2;
-        uint32_t mapping_object_3;
     } x1630_rpdo_49_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
         uint32_t mapping_object_2;
+        uint32_t mapping_object_3;
     } x1631_rpdo_50_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
         uint32_t mapping_object_2;
+        uint32_t mapping_object_3;
     } x1632_rpdo_51_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
@@ -888,7 +904,6 @@ typedef struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
         uint32_t mapping_object_2;
-        uint32_t mapping_object_3;
     } x1637_rpdo_56_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
@@ -917,9 +932,6 @@ typedef struct {
         uint32_t mapping_object_1;
         uint32_t mapping_object_2;
         uint32_t mapping_object_3;
-        uint32_t mapping_object_4;
-        uint32_t mapping_object_5;
-        uint32_t mapping_object_6;
     } x163C_rpdo_61_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
@@ -929,16 +941,19 @@ typedef struct {
     struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
+        uint32_t mapping_object_2;
     } x163E_rpdo_63_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
         uint32_t mapping_object_2;
+        uint32_t mapping_object_3;
     } x163F_rpdo_64_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
         uint32_t mapping_object_2;
+        uint32_t mapping_object_3;
     } x1640_rpdo_65_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
@@ -949,21 +964,18 @@ typedef struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
         uint32_t mapping_object_2;
-        uint32_t mapping_object_3;
-        uint32_t mapping_object_4;
     } x1642_rpdo_67_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
+        uint32_t mapping_object_2;
+        uint32_t mapping_object_3;
     } x1643_rpdo_68_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
         uint32_t mapping_object_2;
         uint32_t mapping_object_3;
-        uint32_t mapping_object_4;
-        uint32_t mapping_object_5;
-        uint32_t mapping_object_6;
     } x1644_rpdo_69_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
@@ -974,12 +986,12 @@ typedef struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
         uint32_t mapping_object_2;
-        uint32_t mapping_object_3;
-        uint32_t mapping_object_4;
     } x1646_rpdo_71_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
         uint32_t mapping_object_1;
+        uint32_t mapping_object_2;
+        uint32_t mapping_object_3;
     } x1647_rpdo_72_mapping_parameters;
     struct {
         uint8_t highest_index_supported;
@@ -2588,5 +2600,548 @@ extern OD_ATTR_OD OD_t *OD;
 #define OD_SUBINDEX_DIODE_TEST_ADCSAMPLE_LED_CURRENT 0x6
 #define OD_SUBINDEX_DIODE_TEST_ADCSAMPLE_LED_SWIR_PD_CURRENT 0x7
 #define OD_SUBINDEX_DIODE_TEST_ADCSAMPLE_UV_PD_CURRENT 0x8
+
+enum os_command_status_enum {
+    OS_COMMAND_STATUS_NO_ERROR_NO_REPLY = 0,
+    OS_COMMAND_STATUS_NO_ERROR_REPLY = 1,
+    OS_COMMAND_STATUS_ERROR_NO_REPLY = 2,
+    OS_COMMAND_STATUS_ERROR_REPLY = 3,
+    OS_COMMAND_STATUS_EXECUTING = 255,
+};
+
+enum satellite_id_enum {
+    SATELLITE_ID_ORESAT0 = 1,
+    SATELLITE_ID_ORESAT0_5 = 2,
+    SATELLITE_ID_ORESAT1 = 3,
+};
+
+enum system_reset_enum {
+    SYSTEM_RESET_NO_STOP = 0,
+    SYSTEM_RESET_SOFT_RESET = 1,
+    SYSTEM_RESET_HARD_RESET = 2,
+    SYSTEM_RESET_FACTORY_RESET = 3,
+    SYSTEM_RESET_POWEROFF = 4,
+};
+
+enum updater_status_enum {
+    UPDATER_STATUS_SUCCESSFUL = 0,
+    UPDATER_STATUS_PRE_PROCESS_ERROR = 1,
+    UPDATER_STATUS_RUN_ERROR = 2,
+    UPDATER_STATUS_IN_PROGRESS = 255,
+};
+
+enum status_enum {
+    STATUS_PRE_DEPLY = 66,
+    STATUS_DEPLOY = 67,
+    STATUS_STANDBY = 68,
+    STATUS_BEACON = 69,
+    STATUS_EDL = 70,
+};
+
+enum opd_status_enum {
+    OPD_STATUS_DISABLE = 0,
+    OPD_STATUS_ENABLE = 1,
+    OPD_STATUS_FAULT = 2,
+    OPD_STATUS_DEAD = 3,
+};
+
+enum opd_node_status_enum {
+    OPD_NODE_STATUS_DISABLE = 1,
+    OPD_NODE_STATUS_ENABLE = 2,
+    OPD_NODE_STATUS_FAULT = 3,
+    OPD_NODE_STATUS_DEAD = 4,
+    OPD_NODE_STATUS_NOT_FOUND = 255,
+};
+
+enum node_status_enum {
+    NODE_STATUS_OFF = 0,
+    NODE_STATUS_BOOT = 1,
+    NODE_STATUS_ON = 2,
+    NODE_STATUS_ERROR = 3,
+    NODE_STATUS_NOT_FOUND = 4,
+    NODE_STATUS_DEAD = 255,
+};
+
+enum adcs_manager_mode_enum {
+    ADCS_MANAGER_MODE_NONE = 0,
+    ADCS_MANAGER_MODE_STANDBY = 1,
+    ADCS_MANAGER_MODE_HOLD = 2,
+    ADCS_MANAGER_MODE_CALIBRATE = 3,
+    ADCS_MANAGER_MODE_SPINDOWN = 4,
+    ADCS_MANAGER_MODE_DETUMBLE = 5,
+    ADCS_MANAGER_MODE_BBQ = 6,
+    ADCS_MANAGER_MODE_POINT = 7,
+    ADCS_MANAGER_MODE_MANUAL = 8,
+};
+
+enum adcs_manager_status_enum {
+    ADCS_MANAGER_STATUS_NONE = 0,
+    ADCS_MANAGER_STATUS_IDLE = 1,
+    ADCS_MANAGER_STATUS_STARTING = 2,
+    ADCS_MANAGER_STATUS_MISSION = 3,
+    ADCS_MANAGER_STATUS_DEGRADED = 4,
+    ADCS_MANAGER_STATUS_UNSAFE = 5,
+    ADCS_MANAGER_STATUS_ERROR = 6,
+    ADCS_MANAGER_STATUS_DONE = 7,
+};
+
+enum star_tracker_1_updater_status_enum {
+    STAR_TRACKER_1_UPDATER_STATUS_SUCCESSFUL = 0,
+    STAR_TRACKER_1_UPDATER_STATUS_PRE_PROCESS_ERROR = 1,
+    STAR_TRACKER_1_UPDATER_STATUS_RUN_ERROR = 2,
+    STAR_TRACKER_1_UPDATER_STATUS_IN_PROGRESS = 255,
+};
+
+enum star_tracker_1_status_enum {
+    STAR_TRACKER_1_STATUS_OFF = 0,
+    STAR_TRACKER_1_STATUS_BOOT = 1,
+    STAR_TRACKER_1_STATUS_STANDBY = 2,
+    STAR_TRACKER_1_STATUS_LOW_POWER = 3,
+    STAR_TRACKER_1_STATUS_STAR_TRACK = 4,
+    STAR_TRACKER_1_STATUS_CAPTURE = 5,
+    STAR_TRACKER_1_STATUS_ERROR = 255,
+};
+
+enum gps_updater_status_enum {
+    GPS_UPDATER_STATUS_SUCCESSFUL = 0,
+    GPS_UPDATER_STATUS_PRE_PROCESS_ERROR = 1,
+    GPS_UPDATER_STATUS_RUN_ERROR = 2,
+    GPS_UPDATER_STATUS_IN_PROGRESS = 255,
+};
+
+enum gps_status_enum {
+    GPS_STATUS_OFF = 0,
+    GPS_STATUS_SEARCHING = 1,
+    GPS_STATUS_LOCKED = 2,
+    GPS_STATUS_ERROR = 255,
+};
+
+enum gps_skytraq_fix_mode_enum {
+    GPS_SKYTRAQ_FIX_MODE_NO_FIX = 0,
+    GPS_SKYTRAQ_FIX_MODE_2D = 1,
+    GPS_SKYTRAQ_FIX_MODE_3D = 2,
+    GPS_SKYTRAQ_FIX_MODE_3D_DGPS = 3,
+};
+
+enum rw_1_ctrl_stat_current_state_enum {
+    RW_1_CTRL_STAT_CURRENT_STATE_NONE = 0,
+    RW_1_CTRL_STAT_CURRENT_STATE_IDLE = 1,
+    RW_1_CTRL_STAT_CURRENT_STATE_SYSTEM_ERROR = 2,
+    RW_1_CTRL_STAT_CURRENT_STATE_CONTROLLER_ERROR = 3,
+    RW_1_CTRL_STAT_CURRENT_STATE_TORQUE_CONTROL = 4,
+    RW_1_CTRL_STAT_CURRENT_STATE_VEL_CONTROL = 5,
+    RW_1_CTRL_STAT_CURRENT_STATE_POS_CONTROL = 6,
+    RW_1_CTRL_STAT_CURRENT_STATE_MOTOR_RESISTANCE_CAL = 7,
+    RW_1_CTRL_STAT_CURRENT_STATE_MOTOR_INDUCTANCE_CAL = 8,
+    RW_1_CTRL_STAT_CURRENT_STATE_ENCODER_DIR_CAL = 9,
+    RW_1_CTRL_STAT_CURRENT_STATE_ENCODER_OFFSET_CAL = 10,
+    RW_1_CTRL_STAT_CURRENT_STATE_ENCODER_TEST = 11,
+    RW_1_CTRL_STAT_CURRENT_STATE_OPEN_LOOP_CONTROL = 12,
+    RW_1_CTRL_STAT_CURRENT_STATE_CLEAR_ERRORS = 13,
+    RW_1_CTRL_STAT_CURRENT_STATE_ENCODER_VALIDATION = 14,
+    RW_1_CTRL_STAT_CURRENT_STATE_SHITTY_OFFSET_CAL = 15,
+    RW_1_CTRL_STAT_CURRENT_STATE_VEL_RAMP_CONTROL = 16,
+};
+
+enum rw_2_ctrl_stat_current_state_enum {
+    RW_2_CTRL_STAT_CURRENT_STATE_NONE = 0,
+    RW_2_CTRL_STAT_CURRENT_STATE_IDLE = 1,
+    RW_2_CTRL_STAT_CURRENT_STATE_SYSTEM_ERROR = 2,
+    RW_2_CTRL_STAT_CURRENT_STATE_CONTROLLER_ERROR = 3,
+    RW_2_CTRL_STAT_CURRENT_STATE_TORQUE_CONTROL = 4,
+    RW_2_CTRL_STAT_CURRENT_STATE_VEL_CONTROL = 5,
+    RW_2_CTRL_STAT_CURRENT_STATE_POS_CONTROL = 6,
+    RW_2_CTRL_STAT_CURRENT_STATE_MOTOR_RESISTANCE_CAL = 7,
+    RW_2_CTRL_STAT_CURRENT_STATE_MOTOR_INDUCTANCE_CAL = 8,
+    RW_2_CTRL_STAT_CURRENT_STATE_ENCODER_DIR_CAL = 9,
+    RW_2_CTRL_STAT_CURRENT_STATE_ENCODER_OFFSET_CAL = 10,
+    RW_2_CTRL_STAT_CURRENT_STATE_ENCODER_TEST = 11,
+    RW_2_CTRL_STAT_CURRENT_STATE_OPEN_LOOP_CONTROL = 12,
+    RW_2_CTRL_STAT_CURRENT_STATE_CLEAR_ERRORS = 13,
+    RW_2_CTRL_STAT_CURRENT_STATE_ENCODER_VALIDATION = 14,
+    RW_2_CTRL_STAT_CURRENT_STATE_SHITTY_OFFSET_CAL = 15,
+    RW_2_CTRL_STAT_CURRENT_STATE_VEL_RAMP_CONTROL = 16,
+};
+
+enum rw_3_ctrl_stat_current_state_enum {
+    RW_3_CTRL_STAT_CURRENT_STATE_NONE = 0,
+    RW_3_CTRL_STAT_CURRENT_STATE_IDLE = 1,
+    RW_3_CTRL_STAT_CURRENT_STATE_SYSTEM_ERROR = 2,
+    RW_3_CTRL_STAT_CURRENT_STATE_CONTROLLER_ERROR = 3,
+    RW_3_CTRL_STAT_CURRENT_STATE_TORQUE_CONTROL = 4,
+    RW_3_CTRL_STAT_CURRENT_STATE_VEL_CONTROL = 5,
+    RW_3_CTRL_STAT_CURRENT_STATE_POS_CONTROL = 6,
+    RW_3_CTRL_STAT_CURRENT_STATE_MOTOR_RESISTANCE_CAL = 7,
+    RW_3_CTRL_STAT_CURRENT_STATE_MOTOR_INDUCTANCE_CAL = 8,
+    RW_3_CTRL_STAT_CURRENT_STATE_ENCODER_DIR_CAL = 9,
+    RW_3_CTRL_STAT_CURRENT_STATE_ENCODER_OFFSET_CAL = 10,
+    RW_3_CTRL_STAT_CURRENT_STATE_ENCODER_TEST = 11,
+    RW_3_CTRL_STAT_CURRENT_STATE_OPEN_LOOP_CONTROL = 12,
+    RW_3_CTRL_STAT_CURRENT_STATE_CLEAR_ERRORS = 13,
+    RW_3_CTRL_STAT_CURRENT_STATE_ENCODER_VALIDATION = 14,
+    RW_3_CTRL_STAT_CURRENT_STATE_SHITTY_OFFSET_CAL = 15,
+    RW_3_CTRL_STAT_CURRENT_STATE_VEL_RAMP_CONTROL = 16,
+};
+
+enum rw_4_ctrl_stat_current_state_enum {
+    RW_4_CTRL_STAT_CURRENT_STATE_NONE = 0,
+    RW_4_CTRL_STAT_CURRENT_STATE_IDLE = 1,
+    RW_4_CTRL_STAT_CURRENT_STATE_SYSTEM_ERROR = 2,
+    RW_4_CTRL_STAT_CURRENT_STATE_CONTROLLER_ERROR = 3,
+    RW_4_CTRL_STAT_CURRENT_STATE_TORQUE_CONTROL = 4,
+    RW_4_CTRL_STAT_CURRENT_STATE_VEL_CONTROL = 5,
+    RW_4_CTRL_STAT_CURRENT_STATE_POS_CONTROL = 6,
+    RW_4_CTRL_STAT_CURRENT_STATE_MOTOR_RESISTANCE_CAL = 7,
+    RW_4_CTRL_STAT_CURRENT_STATE_MOTOR_INDUCTANCE_CAL = 8,
+    RW_4_CTRL_STAT_CURRENT_STATE_ENCODER_DIR_CAL = 9,
+    RW_4_CTRL_STAT_CURRENT_STATE_ENCODER_OFFSET_CAL = 10,
+    RW_4_CTRL_STAT_CURRENT_STATE_ENCODER_TEST = 11,
+    RW_4_CTRL_STAT_CURRENT_STATE_OPEN_LOOP_CONTROL = 12,
+    RW_4_CTRL_STAT_CURRENT_STATE_CLEAR_ERRORS = 13,
+    RW_4_CTRL_STAT_CURRENT_STATE_ENCODER_VALIDATION = 14,
+    RW_4_CTRL_STAT_CURRENT_STATE_SHITTY_OFFSET_CAL = 15,
+    RW_4_CTRL_STAT_CURRENT_STATE_VEL_RAMP_CONTROL = 16,
+};
+
+enum dxwifi_updater_status_enum {
+    DXWIFI_UPDATER_STATUS_SUCCESSFUL = 0,
+    DXWIFI_UPDATER_STATUS_PRE_PROCESS_ERROR = 1,
+    DXWIFI_UPDATER_STATUS_RUN_ERROR = 2,
+    DXWIFI_UPDATER_STATUS_IN_PROGRESS = 255,
+};
+
+enum dxwifi_status_enum {
+    DXWIFI_STATUS_OFF = 0,
+    DXWIFI_STATUS_BOOT = 1,
+    DXWIFI_STATUS_STANDBY = 2,
+    DXWIFI_STATUS_FILM = 3,
+    DXWIFI_STATUS_TRANSMIT = 4,
+    DXWIFI_STATUS_PURGE = 5,
+    DXWIFI_STATUS_ERROR = 255,
+};
+
+enum cfc_processor_updater_status_enum {
+    CFC_PROCESSOR_UPDATER_STATUS_SUCCESSFUL = 0,
+    CFC_PROCESSOR_UPDATER_STATUS_PRE_PROCESS_ERROR = 1,
+    CFC_PROCESSOR_UPDATER_STATUS_RUN_ERROR = 2,
+    CFC_PROCESSOR_UPDATER_STATUS_IN_PROGRESS = 255,
+};
+
+enum cfc_processor_camera_status_enum {
+    CFC_PROCESSOR_CAMERA_STATUS_OFF = 1,
+    CFC_PROCESSOR_CAMERA_STATUS_STANDBY = 2,
+    CFC_PROCESSOR_CAMERA_STATUS_CAPTURE = 3,
+    CFC_PROCESSOR_CAMERA_STATUS_ERROR = 4,
+};
+
+enum diode_test_dtc_ctrl_enum {
+    DIODE_TEST_DTC_CTRL_NOP = 0,
+    DIODE_TEST_DTC_CTRL_DTC_DACSTART = 1,
+    DIODE_TEST_DTC_CTRL_DTC_DACSTOP = 2,
+    DIODE_TEST_DTC_CTRL_DTC_GPTSTART = 3,
+    DIODE_TEST_DTC_CTRL_DTC_GPTSTOP = 4,
+    DIODE_TEST_DTC_CTRL_DTC_ADCSTART = 5,
+    DIODE_TEST_DTC_CTRL_DTC_ADCSTOP = 6,
+    DIODE_TEST_DTC_CTRL_DTC_MUXENABLE = 7,
+    DIODE_TEST_DTC_CTRL_DTC_MUXDISABLE = 8,
+    DIODE_TEST_DTC_CTRL_DTC_CLEARERRORS = 9,
+};
+
+typedef union device_type_bitfield {
+    uint32_t value;
+    struct __attribute((packed)) {
+        uint32_t device_profile_numer : 16;
+        uint32_t additional_info : 16;
+    } fields;
+} device_type_bitfield_t;
+STATIC_ASSERT(sizeof(device_type_bitfield_t) == sizeof(uint32_t));
+
+typedef union error_register_bitfield {
+    uint8_t value;
+    struct __attribute((packed)) {
+        uint8_t generic_error : 1;
+        uint8_t current : 1;
+        uint8_t voltage : 1;
+        uint8_t temperature : 1;
+        uint8_t communication_error : 1;
+        uint8_t device_profile_specfic : 1;
+        uint8_t unused6 : 1;
+        uint8_t manufacturer_specific : 1;
+    } fields;
+} error_register_bitfield_t;
+STATIC_ASSERT(sizeof(error_register_bitfield_t) == sizeof(uint8_t));
+
+typedef union predefined_error_field_bitfield {
+    uint32_t value;
+    struct __attribute((packed)) {
+        uint32_t error_code : 16;
+        uint32_t additional_info : 16;
+    } fields;
+} predefined_error_field_bitfield_t;
+STATIC_ASSERT(sizeof(predefined_error_field_bitfield_t) == sizeof(uint32_t));
+
+typedef union cob_id_sync_bitfield {
+    uint32_t value;
+    struct __attribute((packed)) {
+        uint32_t can_id : 11;
+        uint32_t unused11 : 18;
+        uint32_t frame : 1;
+        uint32_t gen : 1;
+        uint32_t unused31 : 1;
+    } fields;
+} cob_id_sync_bitfield_t;
+STATIC_ASSERT(sizeof(cob_id_sync_bitfield_t) == sizeof(uint32_t));
+
+typedef union cob_id_emergency_message_bitfield {
+    uint32_t value;
+    struct __attribute((packed)) {
+        uint32_t can_id : 11;
+        uint32_t unused11 : 18;
+        uint32_t frame : 1;
+        uint32_t unused30 : 1;
+        uint32_t not_valid : 1;
+    } fields;
+} cob_id_emergency_message_bitfield_t;
+STATIC_ASSERT(sizeof(cob_id_emergency_message_bitfield_t) == sizeof(uint32_t));
+
+typedef union identity_revision_number_bitfield {
+    uint32_t value;
+    struct __attribute((packed)) {
+        uint32_t minor : 16;
+        uint32_t major : 16;
+    } fields;
+} identity_revision_number_bitfield_t;
+STATIC_ASSERT(sizeof(identity_revision_number_bitfield_t) == sizeof(uint32_t));
+
+typedef union sdo_server_parameter_cob_id_client_to_server_bitfield {
+    uint32_t value;
+    struct __attribute((packed)) {
+        uint32_t can_id : 11;
+        uint32_t unused11 : 18;
+        uint32_t frame : 1;
+        uint32_t dyn : 1;
+        uint32_t not_valid : 1;
+    } fields;
+} sdo_server_parameter_cob_id_client_to_server_bitfield_t;
+STATIC_ASSERT(sizeof(sdo_server_parameter_cob_id_client_to_server_bitfield_t) == sizeof(uint32_t));
+
+typedef union sdo_server_parameter_cob_id_server_to_client_bitfield {
+    uint32_t value;
+    struct __attribute((packed)) {
+        uint32_t can_id : 11;
+        uint32_t unused11 : 18;
+        uint32_t frame : 1;
+        uint32_t dyn : 1;
+        uint32_t not_valid : 1;
+    } fields;
+} sdo_server_parameter_cob_id_server_to_client_bitfield_t;
+STATIC_ASSERT(sizeof(sdo_server_parameter_cob_id_server_to_client_bitfield_t) == sizeof(uint32_t));
+
+typedef union sdo_client_parameter_cob_id_client_to_server_bitfield {
+    uint32_t value;
+    struct __attribute((packed)) {
+        uint32_t can_id : 11;
+        uint32_t unused11 : 18;
+        uint32_t frame : 1;
+        uint32_t dyn : 1;
+        uint32_t not_valid : 1;
+    } fields;
+} sdo_client_parameter_cob_id_client_to_server_bitfield_t;
+STATIC_ASSERT(sizeof(sdo_client_parameter_cob_id_client_to_server_bitfield_t) == sizeof(uint32_t));
+
+typedef union sdo_client_parameter_cob_id_server_to_client_bitfield {
+    uint32_t value;
+    struct __attribute((packed)) {
+        uint32_t can_id : 11;
+        uint32_t unused11 : 18;
+        uint32_t frame : 1;
+        uint32_t dyn : 1;
+        uint32_t not_valid : 1;
+    } fields;
+} sdo_client_parameter_cob_id_server_to_client_bitfield_t;
+STATIC_ASSERT(sizeof(sdo_client_parameter_cob_id_server_to_client_bitfield_t) == sizeof(uint32_t));
+
+typedef union system_boot_select_bitfield {
+    uint8_t value;
+    struct __attribute((packed)) {
+        uint8_t current_boot : 1;
+        uint8_t next_boot : 1;
+        uint8_t unused2 : 6;
+    } fields;
+} system_boot_select_bitfield_t;
+STATIC_ASSERT(sizeof(system_boot_select_bitfield_t) == sizeof(uint8_t));
+
+typedef union battery_1_pack_1_status_bitfield {
+    uint8_t value;
+    struct __attribute((packed)) {
+        uint8_t heater_on : 1;
+        uint8_t discharge_disable : 1;
+        uint8_t charge_disable : 1;
+        uint8_t discharge_status : 1;
+        uint8_t charge_status : 1;
+        uint8_t unused5 : 3;
+    } fields;
+} battery_1_pack_1_status_bitfield_t;
+STATIC_ASSERT(sizeof(battery_1_pack_1_status_bitfield_t) == sizeof(uint8_t));
+
+typedef union battery_1_pack_2_status_bitfield {
+    uint8_t value;
+    struct __attribute((packed)) {
+        uint8_t heater_on : 1;
+        uint8_t discharge_disable : 1;
+        uint8_t charge_disable : 1;
+        uint8_t discharge_status : 1;
+        uint8_t charge_status : 1;
+        uint8_t unused5 : 3;
+    } fields;
+} battery_1_pack_2_status_bitfield_t;
+STATIC_ASSERT(sizeof(battery_1_pack_2_status_bitfield_t) == sizeof(uint8_t));
+
+typedef union rw_1_ctrl_stat_errors_bitfield {
+    uint32_t value;
+    struct __attribute((packed)) {
+        uint32_t inverter_calibration_invalid : 1;
+        uint32_t phase_currents_invalid : 1;
+        uint32_t phase_currents_measurement_missing : 1;
+        uint32_t pwm_timing_invalid : 1;
+        uint32_t pwm_timing_update_missing : 1;
+        uint32_t vbus_overvoltage : 1;
+        uint32_t vbus_undervoltage : 1;
+        uint32_t ibus_overcurrent : 1;
+        uint32_t motor_overcurrent : 1;
+        uint32_t motor_phase_leakage : 1;
+        uint32_t motor_resistance_out_of_range : 1;
+        uint32_t motor_inductance_out_of_range : 1;
+        uint32_t encoder_reading_missing : 1;
+        uint32_t encoder_estimate_missing : 1;
+        uint32_t encoder_reading_invalid : 1;
+        uint32_t encoder_failure : 1;
+        uint32_t phase_current_usage_missing : 1;
+        uint32_t pwm_timing_usage_missing : 1;
+        uint32_t phase_current_leakage : 1;
+        uint32_t encoder_reading_usage_missing : 1;
+        uint32_t motor_unbalanced_phases : 1;
+        uint32_t modulation : 1;
+        uint32_t unused22 : 10;
+    } fields;
+} rw_1_ctrl_stat_errors_bitfield_t;
+STATIC_ASSERT(sizeof(rw_1_ctrl_stat_errors_bitfield_t) == sizeof(uint32_t));
+
+typedef union rw_2_ctrl_stat_errors_bitfield {
+    uint32_t value;
+    struct __attribute((packed)) {
+        uint32_t inverter_calibration_invalid : 1;
+        uint32_t phase_currents_invalid : 1;
+        uint32_t phase_currents_measurement_missing : 1;
+        uint32_t pwm_timing_invalid : 1;
+        uint32_t pwm_timing_update_missing : 1;
+        uint32_t vbus_overvoltage : 1;
+        uint32_t vbus_undervoltage : 1;
+        uint32_t ibus_overcurrent : 1;
+        uint32_t motor_overcurrent : 1;
+        uint32_t motor_phase_leakage : 1;
+        uint32_t motor_resistance_out_of_range : 1;
+        uint32_t motor_inductance_out_of_range : 1;
+        uint32_t encoder_reading_missing : 1;
+        uint32_t encoder_estimate_missing : 1;
+        uint32_t encoder_reading_invalid : 1;
+        uint32_t encoder_failure : 1;
+        uint32_t phase_current_usage_missing : 1;
+        uint32_t pwm_timing_usage_missing : 1;
+        uint32_t phase_current_leakage : 1;
+        uint32_t encoder_reading_usage_missing : 1;
+        uint32_t motor_unbalanced_phases : 1;
+        uint32_t modulation : 1;
+        uint32_t unused22 : 10;
+    } fields;
+} rw_2_ctrl_stat_errors_bitfield_t;
+STATIC_ASSERT(sizeof(rw_2_ctrl_stat_errors_bitfield_t) == sizeof(uint32_t));
+
+typedef union rw_3_ctrl_stat_errors_bitfield {
+    uint32_t value;
+    struct __attribute((packed)) {
+        uint32_t inverter_calibration_invalid : 1;
+        uint32_t phase_currents_invalid : 1;
+        uint32_t phase_currents_measurement_missing : 1;
+        uint32_t pwm_timing_invalid : 1;
+        uint32_t pwm_timing_update_missing : 1;
+        uint32_t vbus_overvoltage : 1;
+        uint32_t vbus_undervoltage : 1;
+        uint32_t ibus_overcurrent : 1;
+        uint32_t motor_overcurrent : 1;
+        uint32_t motor_phase_leakage : 1;
+        uint32_t motor_resistance_out_of_range : 1;
+        uint32_t motor_inductance_out_of_range : 1;
+        uint32_t encoder_reading_missing : 1;
+        uint32_t encoder_estimate_missing : 1;
+        uint32_t encoder_reading_invalid : 1;
+        uint32_t encoder_failure : 1;
+        uint32_t phase_current_usage_missing : 1;
+        uint32_t pwm_timing_usage_missing : 1;
+        uint32_t phase_current_leakage : 1;
+        uint32_t encoder_reading_usage_missing : 1;
+        uint32_t motor_unbalanced_phases : 1;
+        uint32_t modulation : 1;
+        uint32_t unused22 : 10;
+    } fields;
+} rw_3_ctrl_stat_errors_bitfield_t;
+STATIC_ASSERT(sizeof(rw_3_ctrl_stat_errors_bitfield_t) == sizeof(uint32_t));
+
+typedef union rw_4_ctrl_stat_errors_bitfield {
+    uint32_t value;
+    struct __attribute((packed)) {
+        uint32_t inverter_calibration_invalid : 1;
+        uint32_t phase_currents_invalid : 1;
+        uint32_t phase_currents_measurement_missing : 1;
+        uint32_t pwm_timing_invalid : 1;
+        uint32_t pwm_timing_update_missing : 1;
+        uint32_t vbus_overvoltage : 1;
+        uint32_t vbus_undervoltage : 1;
+        uint32_t ibus_overcurrent : 1;
+        uint32_t motor_overcurrent : 1;
+        uint32_t motor_phase_leakage : 1;
+        uint32_t motor_resistance_out_of_range : 1;
+        uint32_t motor_inductance_out_of_range : 1;
+        uint32_t encoder_reading_missing : 1;
+        uint32_t encoder_estimate_missing : 1;
+        uint32_t encoder_reading_invalid : 1;
+        uint32_t encoder_failure : 1;
+        uint32_t phase_current_usage_missing : 1;
+        uint32_t pwm_timing_usage_missing : 1;
+        uint32_t phase_current_leakage : 1;
+        uint32_t encoder_reading_usage_missing : 1;
+        uint32_t motor_unbalanced_phases : 1;
+        uint32_t modulation : 1;
+        uint32_t unused22 : 10;
+    } fields;
+} rw_4_ctrl_stat_errors_bitfield_t;
+STATIC_ASSERT(sizeof(rw_4_ctrl_stat_errors_bitfield_t) == sizeof(uint32_t));
+
+typedef union diode_test_dtc_status_bitfield {
+    uint16_t value;
+    struct __attribute((packed)) {
+        uint16_t dac_en : 1;
+        uint16_t gpt_en : 1;
+        uint16_t adc_en : 1;
+        uint16_t mux_en : 1;
+        uint16_t mux_a0 : 1;
+        uint16_t mux_a1 : 1;
+        uint16_t mux_a2 : 1;
+        uint16_t unused7 : 9;
+    } fields;
+} diode_test_dtc_status_bitfield_t;
+STATIC_ASSERT(sizeof(diode_test_dtc_status_bitfield_t) == sizeof(uint16_t));
+
+typedef union diode_test_dtc_error_bitfield {
+    uint16_t value;
+    struct __attribute((packed)) {
+        uint16_t dac : 1;
+        uint16_t adc_cb : 1;
+        uint16_t adc_start : 1;
+        uint16_t adc_stop : 1;
+        uint16_t unused4 : 12;
+    } fields;
+} diode_test_dtc_error_bitfield_t;
+STATIC_ASSERT(sizeof(diode_test_dtc_error_bitfield_t) == sizeof(uint16_t));
 
 #endif /* OD_H */

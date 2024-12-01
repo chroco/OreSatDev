@@ -85,7 +85,8 @@ set(SOURCE_FILES
 )
 
 add_compile_options(
-    -std=gnu99
+	#-std=gnu99
+	-std=gnu99
     -pthread
     #  -std=c++11
     -g

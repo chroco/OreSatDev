@@ -13,7 +13,7 @@ OD_ATTR_RAM OD_RAM_t OD_RAM = {
     .x1003_predefined_error_field = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
     .x1005_cob_id_sync = 0x80,
     .x1006_communication_cycle_period = 0x0,
-    .x1014_cob_id_emergency_message = 0x81,
+    .x1014_cob_id_emergency_message = 0x80,
     .x1015_inhibit_time_emcy = 0x0,
     .x1016_consumer_heartbeat_time_sub0 = 84,
     .x1016_consumer_heartbeat_time = {0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x3E8},
@@ -28,7 +28,9 @@ OD_ATTR_RAM OD_RAM_t OD_RAM = {
     .x1019_synchronous_counter_overflow_value = 0x0,
     .x1023_os_command = {
         .highest_index_supported = 0x3,
+        .command = {0x00},
         .status = 0x0,
+        .reply = {0x00},
     },
     .x1200_sdo_server_parameter = {
         .highest_index_supported = 0x3,
@@ -40,485 +42,485 @@ OD_ATTR_RAM OD_RAM_t OD_RAM = {
         .highest_index_supported = 0x3,
         .cob_id_client_to_server = 0x80000000,
         .cob_id_server_to_client = 0x80000000,
-        .node_id_od_sdo_client = 0x1,
+        .node_id_of_sdo_server = 0x1,
     },
     .x1400_rpdo_1_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x180,
+        .cob_id = 0x184,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1401_rpdo_2_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x280,
+        .cob_id = 0x284,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1402_rpdo_3_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x380,
+        .cob_id = 0x384,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1403_rpdo_4_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x480,
+        .cob_id = 0x484,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1404_rpdo_5_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x184,
+        .cob_id = 0x185,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1405_rpdo_6_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x284,
+        .cob_id = 0x285,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1406_rpdo_7_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x384,
+        .cob_id = 0x385,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1407_rpdo_8_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x484,
+        .cob_id = 0x485,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1408_rpdo_9_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x184,
+        .cob_id = 0x186,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1409_rpdo_10_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x284,
+        .cob_id = 0x286,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x140A_rpdo_11_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x188,
+        .cob_id = 0x18C,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x140B_rpdo_12_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x288,
+        .cob_id = 0x28C,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x140C_rpdo_13_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x388,
+        .cob_id = 0x38C,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x140D_rpdo_14_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x488,
+        .cob_id = 0x48C,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x140E_rpdo_15_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x18C,
+        .cob_id = 0x190,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x140F_rpdo_16_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x28C,
+        .cob_id = 0x290,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1410_rpdo_17_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x38C,
+        .cob_id = 0x390,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1411_rpdo_18_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x48C,
+        .cob_id = 0x490,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1412_rpdo_19_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x190,
+        .cob_id = 0x194,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1413_rpdo_20_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x290,
+        .cob_id = 0x294,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1414_rpdo_21_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x390,
+        .cob_id = 0x394,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1415_rpdo_22_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x490,
+        .cob_id = 0x494,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1416_rpdo_23_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x194,
+        .cob_id = 0x198,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1417_rpdo_24_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x294,
+        .cob_id = 0x298,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1418_rpdo_25_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x394,
+        .cob_id = 0x398,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1419_rpdo_26_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x494,
+        .cob_id = 0x498,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x141A_rpdo_27_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x198,
+        .cob_id = 0x19C,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x141B_rpdo_28_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x298,
+        .cob_id = 0x29C,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x141C_rpdo_29_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x398,
+        .cob_id = 0x39C,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x141D_rpdo_30_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x498,
+        .cob_id = 0x49C,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x141E_rpdo_31_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x19C,
+        .cob_id = 0x1A0,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x141F_rpdo_32_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x29C,
+        .cob_id = 0x2A0,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1420_rpdo_33_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x39C,
+        .cob_id = 0x3A0,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1421_rpdo_34_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x49C,
+        .cob_id = 0x4A0,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1422_rpdo_35_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x1B4,
+        .cob_id = 0x1AC,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1423_rpdo_36_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x2B4,
+        .cob_id = 0x2AC,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1424_rpdo_37_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x3B4,
+        .cob_id = 0x3AC,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1425_rpdo_38_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x4B4,
+        .cob_id = 0x4AC,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1426_rpdo_39_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x1B8,
+        .cob_id = 0x1B4,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1427_rpdo_40_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x2B8,
+        .cob_id = 0x2B4,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1428_rpdo_41_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x3B8,
+        .cob_id = 0x3B4,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1429_rpdo_42_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x4B8,
+        .cob_id = 0x4B4,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x142A_rpdo_43_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x1B8,
+        .cob_id = 0x1B5,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x142B_rpdo_44_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x2B8,
+        .cob_id = 0x2B5,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x142C_rpdo_45_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x1B8,
+        .cob_id = 0x3B5,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x142D_rpdo_46_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x2B8,
+        .cob_id = 0x4B7,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x142E_rpdo_47_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x3B8,
+        .cob_id = 0x1B8,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x142F_rpdo_48_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x4B8,
+        .cob_id = 0x2B8,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1430_rpdo_49_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x1BC,
+        .cob_id = 0x3B8,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1431_rpdo_50_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x2BC,
+        .cob_id = 0x4B8,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1432_rpdo_51_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x3BC,
+        .cob_id = 0x1B9,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1433_rpdo_52_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x4BC,
+        .cob_id = 0x2B9,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1434_rpdo_53_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x1C0,
+        .cob_id = 0x3B9,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1435_rpdo_54_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x2C0,
+        .cob_id = 0x4B9,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1436_rpdo_55_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x3C0,
+        .cob_id = 0x1BA,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1437_rpdo_56_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x4C0,
+        .cob_id = 0x2BA,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1438_rpdo_57_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x1C4,
+        .cob_id = 0x1BC,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1439_rpdo_58_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x2C4,
+        .cob_id = 0x2BC,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x143A_rpdo_59_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x3C4,
+        .cob_id = 0x3BC,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x143B_rpdo_60_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x4C4,
+        .cob_id = 0x4BC,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x143C_rpdo_61_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x1B0,
+        .cob_id = 0x1C0,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x143D_rpdo_62_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x2B0,
+        .cob_id = 0x2C0,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x143E_rpdo_63_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x3B0,
+        .cob_id = 0x3C0,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x143F_rpdo_64_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x4B0,
+        .cob_id = 0x4C0,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1440_rpdo_65_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x1B4,
+        .cob_id = 0x1C4,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1441_rpdo_66_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x2B4,
+        .cob_id = 0x2C4,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1442_rpdo_67_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x3B4,
+        .cob_id = 0x3C4,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1443_rpdo_68_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x4B4,
+        .cob_id = 0x4C4,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1444_rpdo_69_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x1A8,
+        .cob_id = 0x1C8,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1445_rpdo_70_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x2A8,
+        .cob_id = 0x2C8,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1446_rpdo_71_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x3A8,
+        .cob_id = 0x3C8,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1447_rpdo_72_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x4A8,
+        .cob_id = 0x4C8,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1448_rpdo_73_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x1C8,
+        .cob_id = 0x1CC,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x1449_rpdo_74_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x2C8,
+        .cob_id = 0x2CC,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x144A_rpdo_75_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x3C8,
+        .cob_id = 0x3CC,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x144B_rpdo_76_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x1CC,
+        .cob_id = 0x1D0,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x144C_rpdo_77_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x2CC,
+        .cob_id = 0x2D0,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x144D_rpdo_78_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x3CC,
+        .cob_id = 0x3D0,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x144E_rpdo_79_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x1D0,
+        .cob_id = 0x1D4,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
     .x144F_rpdo_80_communication_parameters = {
         .highest_index_supported = 0x5,
-        .cob_id = 0x2D0,
+        .cob_id = 0x2D4,
         .transmission_type = 0xFE,
         .event_timer = 0x0,
     },
@@ -759,193 +761,6 @@ OD_ATTR_RAM OD_RAM_t OD_RAM = {
         .mapping_object_6 = 0x50201008,
     },
     .x1622_rpdo_35_mapping_parameters = {
-        .highest_index_supported = 0x3,
-        .mapping_object_1 = 0x50380110,
-        .mapping_object_2 = 0x50380210,
-        .mapping_object_3 = 0x50380310,
-    },
-    .x1623_rpdo_36_mapping_parameters = {
-        .highest_index_supported = 0x3,
-        .mapping_object_1 = 0x50380410,
-        .mapping_object_2 = 0x50380510,
-        .mapping_object_3 = 0x50380610,
-    },
-    .x1624_rpdo_37_mapping_parameters = {
-        .highest_index_supported = 0x1,
-        .mapping_object_1 = 0x50380708,
-    },
-    .x1625_rpdo_38_mapping_parameters = {
-        .highest_index_supported = 0x3,
-        .mapping_object_1 = 0x50380810,
-        .mapping_object_2 = 0x50380910,
-        .mapping_object_3 = 0x50380A10,
-    },
-    .x1626_rpdo_39_mapping_parameters = {
-        .highest_index_supported = 0x3,
-        .mapping_object_1 = 0x50380B10,
-        .mapping_object_2 = 0x50380C10,
-        .mapping_object_3 = 0x50380D10,
-    },
-    .x1627_rpdo_40_mapping_parameters = {
-        .highest_index_supported = 0x3,
-        .mapping_object_1 = 0x50380E10,
-        .mapping_object_2 = 0x50380F10,
-        .mapping_object_3 = 0x50381010,
-    },
-    .x1628_rpdo_41_mapping_parameters = {
-        .highest_index_supported = 0x3,
-        .mapping_object_1 = 0x50381110,
-        .mapping_object_2 = 0x50381210,
-        .mapping_object_3 = 0x50381310,
-    },
-    .x1629_rpdo_42_mapping_parameters = {
-        .highest_index_supported = 0x2,
-        .mapping_object_1 = 0x50381410,
-        .mapping_object_2 = 0x50381510,
-    },
-    .x162A_rpdo_43_mapping_parameters = {
-        .highest_index_supported = 0x2,
-        .mapping_object_1 = 0x50381610,
-        .mapping_object_2 = 0x50381710,
-    },
-    .x162B_rpdo_44_mapping_parameters = {
-        .highest_index_supported = 0x2,
-        .mapping_object_1 = 0x50381810,
-        .mapping_object_2 = 0x50381910,
-    },
-    .x162C_rpdo_45_mapping_parameters = {
-        .highest_index_supported = 0x3,
-        .mapping_object_1 = 0x503C0108,
-        .mapping_object_2 = 0x503C0208,
-        .mapping_object_3 = 0x503C0320,
-    },
-    .x162D_rpdo_46_mapping_parameters = {
-        .highest_index_supported = 0x2,
-        .mapping_object_1 = 0x503C0420,
-        .mapping_object_2 = 0x503C0520,
-    },
-    .x162E_rpdo_47_mapping_parameters = {
-        .highest_index_supported = 0x2,
-        .mapping_object_1 = 0x503C0620,
-        .mapping_object_2 = 0x503C0720,
-    },
-    .x162F_rpdo_48_mapping_parameters = {
-        .highest_index_supported = 0x3,
-        .mapping_object_1 = 0x503C0810,
-        .mapping_object_2 = 0x503C0910,
-        .mapping_object_3 = 0x503C0A10,
-    },
-    .x1630_rpdo_49_mapping_parameters = {
-        .highest_index_supported = 0x3,
-        .mapping_object_1 = 0x50400108,
-        .mapping_object_2 = 0x50400208,
-        .mapping_object_3 = 0x50400320,
-    },
-    .x1631_rpdo_50_mapping_parameters = {
-        .highest_index_supported = 0x2,
-        .mapping_object_1 = 0x50400420,
-        .mapping_object_2 = 0x50400520,
-    },
-    .x1632_rpdo_51_mapping_parameters = {
-        .highest_index_supported = 0x2,
-        .mapping_object_1 = 0x50400620,
-        .mapping_object_2 = 0x50400720,
-    },
-    .x1633_rpdo_52_mapping_parameters = {
-        .highest_index_supported = 0x3,
-        .mapping_object_1 = 0x50400810,
-        .mapping_object_2 = 0x50400910,
-        .mapping_object_3 = 0x50400A10,
-    },
-    .x1634_rpdo_53_mapping_parameters = {
-        .highest_index_supported = 0x3,
-        .mapping_object_1 = 0x50440108,
-        .mapping_object_2 = 0x50440208,
-        .mapping_object_3 = 0x50440320,
-    },
-    .x1635_rpdo_54_mapping_parameters = {
-        .highest_index_supported = 0x2,
-        .mapping_object_1 = 0x50440420,
-        .mapping_object_2 = 0x50440520,
-    },
-    .x1636_rpdo_55_mapping_parameters = {
-        .highest_index_supported = 0x2,
-        .mapping_object_1 = 0x50440620,
-        .mapping_object_2 = 0x50440720,
-    },
-    .x1637_rpdo_56_mapping_parameters = {
-        .highest_index_supported = 0x3,
-        .mapping_object_1 = 0x50440810,
-        .mapping_object_2 = 0x50440910,
-        .mapping_object_3 = 0x50440A10,
-    },
-    .x1638_rpdo_57_mapping_parameters = {
-        .highest_index_supported = 0x3,
-        .mapping_object_1 = 0x50480108,
-        .mapping_object_2 = 0x50480208,
-        .mapping_object_3 = 0x50480320,
-    },
-    .x1639_rpdo_58_mapping_parameters = {
-        .highest_index_supported = 0x2,
-        .mapping_object_1 = 0x50480420,
-        .mapping_object_2 = 0x50480520,
-    },
-    .x163A_rpdo_59_mapping_parameters = {
-        .highest_index_supported = 0x2,
-        .mapping_object_1 = 0x50480620,
-        .mapping_object_2 = 0x50480720,
-    },
-    .x163B_rpdo_60_mapping_parameters = {
-        .highest_index_supported = 0x3,
-        .mapping_object_1 = 0x50480810,
-        .mapping_object_2 = 0x50480910,
-        .mapping_object_3 = 0x50480A10,
-    },
-    .x163C_rpdo_61_mapping_parameters = {
-        .highest_index_supported = 0x6,
-        .mapping_object_1 = 0x50340108,
-        .mapping_object_2 = 0x50340208,
-        .mapping_object_3 = 0x50340308,
-        .mapping_object_4 = 0x50340408,
-        .mapping_object_5 = 0x50340508,
-        .mapping_object_6 = 0x50340608,
-    },
-    .x163D_rpdo_62_mapping_parameters = {
-        .highest_index_supported = 0x2,
-        .mapping_object_1 = 0x50340708,
-        .mapping_object_2 = 0x50340808,
-    },
-    .x163E_rpdo_63_mapping_parameters = {
-        .highest_index_supported = 0x1,
-        .mapping_object_1 = 0x50340920,
-    },
-    .x163F_rpdo_64_mapping_parameters = {
-        .highest_index_supported = 0x2,
-        .mapping_object_1 = 0x50340A10,
-        .mapping_object_2 = 0x50340B10,
-    },
-    .x1640_rpdo_65_mapping_parameters = {
-        .highest_index_supported = 0x2,
-        .mapping_object_1 = 0x50340C10,
-        .mapping_object_2 = 0x50340D10,
-    },
-    .x1641_rpdo_66_mapping_parameters = {
-        .highest_index_supported = 0x2,
-        .mapping_object_1 = 0x50340E10,
-        .mapping_object_2 = 0x50340F10,
-    },
-    .x1642_rpdo_67_mapping_parameters = {
-        .highest_index_supported = 0x4,
-        .mapping_object_1 = 0x50341008,
-        .mapping_object_2 = 0x50341108,
-        .mapping_object_3 = 0x50341208,
-        .mapping_object_4 = 0x50341308,
-    },
-    .x1643_rpdo_68_mapping_parameters = {
-        .highest_index_supported = 0x1,
-        .mapping_object_1 = 0x50341440,
-    },
-    .x1644_rpdo_69_mapping_parameters = {
         .highest_index_supported = 0x6,
         .mapping_object_1 = 0x502C0108,
         .mapping_object_2 = 0x502C0208,
@@ -954,21 +769,208 @@ OD_ATTR_RAM OD_RAM_t OD_RAM = {
         .mapping_object_5 = 0x502C0508,
         .mapping_object_6 = 0x502C0608,
     },
-    .x1645_rpdo_70_mapping_parameters = {
+    .x1623_rpdo_36_mapping_parameters = {
         .highest_index_supported = 0x2,
         .mapping_object_1 = 0x502C0708,
         .mapping_object_2 = 0x502C0808,
     },
-    .x1646_rpdo_71_mapping_parameters = {
+    .x1624_rpdo_37_mapping_parameters = {
         .highest_index_supported = 0x4,
         .mapping_object_1 = 0x502C0908,
         .mapping_object_2 = 0x502C0A10,
         .mapping_object_3 = 0x502C0B10,
         .mapping_object_4 = 0x502C0C10,
     },
-    .x1647_rpdo_72_mapping_parameters = {
+    .x1625_rpdo_38_mapping_parameters = {
         .highest_index_supported = 0x1,
         .mapping_object_1 = 0x502C0D20,
+    },
+    .x1626_rpdo_39_mapping_parameters = {
+        .highest_index_supported = 0x6,
+        .mapping_object_1 = 0x50340108,
+        .mapping_object_2 = 0x50340208,
+        .mapping_object_3 = 0x50340308,
+        .mapping_object_4 = 0x50340408,
+        .mapping_object_5 = 0x50340508,
+        .mapping_object_6 = 0x50340608,
+    },
+    .x1627_rpdo_40_mapping_parameters = {
+        .highest_index_supported = 0x2,
+        .mapping_object_1 = 0x50340708,
+        .mapping_object_2 = 0x50340808,
+    },
+    .x1628_rpdo_41_mapping_parameters = {
+        .highest_index_supported = 0x1,
+        .mapping_object_1 = 0x50340920,
+    },
+    .x1629_rpdo_42_mapping_parameters = {
+        .highest_index_supported = 0x2,
+        .mapping_object_1 = 0x50340A10,
+        .mapping_object_2 = 0x50340B10,
+    },
+    .x162A_rpdo_43_mapping_parameters = {
+        .highest_index_supported = 0x2,
+        .mapping_object_1 = 0x50340C10,
+        .mapping_object_2 = 0x50340D10,
+    },
+    .x162B_rpdo_44_mapping_parameters = {
+        .highest_index_supported = 0x2,
+        .mapping_object_1 = 0x50340E10,
+        .mapping_object_2 = 0x50340F10,
+    },
+    .x162C_rpdo_45_mapping_parameters = {
+        .highest_index_supported = 0x4,
+        .mapping_object_1 = 0x50341008,
+        .mapping_object_2 = 0x50341108,
+        .mapping_object_3 = 0x50341208,
+        .mapping_object_4 = 0x50341308,
+    },
+    .x162D_rpdo_46_mapping_parameters = {
+        .highest_index_supported = 0x1,
+        .mapping_object_1 = 0x50341440,
+    },
+    .x162E_rpdo_47_mapping_parameters = {
+        .highest_index_supported = 0x3,
+        .mapping_object_1 = 0x50380110,
+        .mapping_object_2 = 0x50380210,
+        .mapping_object_3 = 0x50380310,
+    },
+    .x162F_rpdo_48_mapping_parameters = {
+        .highest_index_supported = 0x3,
+        .mapping_object_1 = 0x50380410,
+        .mapping_object_2 = 0x50380510,
+        .mapping_object_3 = 0x50380610,
+    },
+    .x1630_rpdo_49_mapping_parameters = {
+        .highest_index_supported = 0x1,
+        .mapping_object_1 = 0x50380708,
+    },
+    .x1631_rpdo_50_mapping_parameters = {
+        .highest_index_supported = 0x3,
+        .mapping_object_1 = 0x50380810,
+        .mapping_object_2 = 0x50380910,
+        .mapping_object_3 = 0x50380A10,
+    },
+    .x1632_rpdo_51_mapping_parameters = {
+        .highest_index_supported = 0x3,
+        .mapping_object_1 = 0x50380B10,
+        .mapping_object_2 = 0x50380C10,
+        .mapping_object_3 = 0x50380D10,
+    },
+    .x1633_rpdo_52_mapping_parameters = {
+        .highest_index_supported = 0x3,
+        .mapping_object_1 = 0x50380E10,
+        .mapping_object_2 = 0x50380F10,
+        .mapping_object_3 = 0x50381010,
+    },
+    .x1634_rpdo_53_mapping_parameters = {
+        .highest_index_supported = 0x3,
+        .mapping_object_1 = 0x50381110,
+        .mapping_object_2 = 0x50381210,
+        .mapping_object_3 = 0x50381310,
+    },
+    .x1635_rpdo_54_mapping_parameters = {
+        .highest_index_supported = 0x2,
+        .mapping_object_1 = 0x50381410,
+        .mapping_object_2 = 0x50381510,
+    },
+    .x1636_rpdo_55_mapping_parameters = {
+        .highest_index_supported = 0x2,
+        .mapping_object_1 = 0x50381610,
+        .mapping_object_2 = 0x50381710,
+    },
+    .x1637_rpdo_56_mapping_parameters = {
+        .highest_index_supported = 0x2,
+        .mapping_object_1 = 0x50381810,
+        .mapping_object_2 = 0x50381910,
+    },
+    .x1638_rpdo_57_mapping_parameters = {
+        .highest_index_supported = 0x3,
+        .mapping_object_1 = 0x503C0108,
+        .mapping_object_2 = 0x503C0208,
+        .mapping_object_3 = 0x503C0320,
+    },
+    .x1639_rpdo_58_mapping_parameters = {
+        .highest_index_supported = 0x2,
+        .mapping_object_1 = 0x503C0420,
+        .mapping_object_2 = 0x503C0520,
+    },
+    .x163A_rpdo_59_mapping_parameters = {
+        .highest_index_supported = 0x2,
+        .mapping_object_1 = 0x503C0620,
+        .mapping_object_2 = 0x503C0720,
+    },
+    .x163B_rpdo_60_mapping_parameters = {
+        .highest_index_supported = 0x3,
+        .mapping_object_1 = 0x503C0810,
+        .mapping_object_2 = 0x503C0910,
+        .mapping_object_3 = 0x503C0A10,
+    },
+    .x163C_rpdo_61_mapping_parameters = {
+        .highest_index_supported = 0x3,
+        .mapping_object_1 = 0x50400108,
+        .mapping_object_2 = 0x50400208,
+        .mapping_object_3 = 0x50400320,
+    },
+    .x163D_rpdo_62_mapping_parameters = {
+        .highest_index_supported = 0x2,
+        .mapping_object_1 = 0x50400420,
+        .mapping_object_2 = 0x50400520,
+    },
+    .x163E_rpdo_63_mapping_parameters = {
+        .highest_index_supported = 0x2,
+        .mapping_object_1 = 0x50400620,
+        .mapping_object_2 = 0x50400720,
+    },
+    .x163F_rpdo_64_mapping_parameters = {
+        .highest_index_supported = 0x3,
+        .mapping_object_1 = 0x50400810,
+        .mapping_object_2 = 0x50400910,
+        .mapping_object_3 = 0x50400A10,
+    },
+    .x1640_rpdo_65_mapping_parameters = {
+        .highest_index_supported = 0x3,
+        .mapping_object_1 = 0x50440108,
+        .mapping_object_2 = 0x50440208,
+        .mapping_object_3 = 0x50440320,
+    },
+    .x1641_rpdo_66_mapping_parameters = {
+        .highest_index_supported = 0x2,
+        .mapping_object_1 = 0x50440420,
+        .mapping_object_2 = 0x50440520,
+    },
+    .x1642_rpdo_67_mapping_parameters = {
+        .highest_index_supported = 0x2,
+        .mapping_object_1 = 0x50440620,
+        .mapping_object_2 = 0x50440720,
+    },
+    .x1643_rpdo_68_mapping_parameters = {
+        .highest_index_supported = 0x3,
+        .mapping_object_1 = 0x50440810,
+        .mapping_object_2 = 0x50440910,
+        .mapping_object_3 = 0x50440A10,
+    },
+    .x1644_rpdo_69_mapping_parameters = {
+        .highest_index_supported = 0x3,
+        .mapping_object_1 = 0x50480108,
+        .mapping_object_2 = 0x50480208,
+        .mapping_object_3 = 0x50480320,
+    },
+    .x1645_rpdo_70_mapping_parameters = {
+        .highest_index_supported = 0x2,
+        .mapping_object_1 = 0x50480420,
+        .mapping_object_2 = 0x50480520,
+    },
+    .x1646_rpdo_71_mapping_parameters = {
+        .highest_index_supported = 0x2,
+        .mapping_object_1 = 0x50480620,
+        .mapping_object_2 = 0x50480720,
+    },
+    .x1647_rpdo_72_mapping_parameters = {
+        .highest_index_supported = 0x3,
+        .mapping_object_1 = 0x50480810,
+        .mapping_object_2 = 0x50480910,
+        .mapping_object_3 = 0x50480A10,
     },
     .x1648_rpdo_73_mapping_parameters = {
         .highest_index_supported = 0x6,
@@ -1032,7 +1034,7 @@ OD_ATTR_RAM OD_RAM_t OD_RAM = {
     },
     .x1800_tpdo_1_communication_parameters = {
         .highest_index_supported = 0x6,
-        .cob_id = 0x181,
+        .cob_id = 0x180,
         .transmission_type = 0xFE,
         .inhibit_time = 0x0,
         .event_timer = 0x0,
@@ -1040,7 +1042,7 @@ OD_ATTR_RAM OD_RAM_t OD_RAM = {
     },
     .x1801_tpdo_2_communication_parameters = {
         .highest_index_supported = 0x6,
-        .cob_id = 0x281,
+        .cob_id = 0x280,
         .transmission_type = 0xFE,
         .inhibit_time = 0x0,
         .event_timer = 0x1388,
@@ -1048,7 +1050,7 @@ OD_ATTR_RAM OD_RAM_t OD_RAM = {
     },
     .x1802_tpdo_3_communication_parameters = {
         .highest_index_supported = 0x6,
-        .cob_id = 0x381,
+        .cob_id = 0x380,
         .transmission_type = 0xFE,
         .inhibit_time = 0x0,
         .event_timer = 0x1388,
@@ -1056,7 +1058,7 @@ OD_ATTR_RAM OD_RAM_t OD_RAM = {
     },
     .x1803_tpdo_4_communication_parameters = {
         .highest_index_supported = 0x6,
-        .cob_id = 0x481,
+        .cob_id = 0x480,
         .transmission_type = 0xFE,
         .inhibit_time = 0x0,
         .event_timer = 0x1388,
@@ -1064,7 +1066,7 @@ OD_ATTR_RAM OD_RAM_t OD_RAM = {
     },
     .x1804_tpdo_5_communication_parameters = {
         .highest_index_supported = 0x6,
-        .cob_id = 0x182,
+        .cob_id = 0x180,
         .transmission_type = 0xFE,
         .inhibit_time = 0x0,
         .event_timer = 0x1388,
@@ -1072,7 +1074,7 @@ OD_ATTR_RAM OD_RAM_t OD_RAM = {
     },
     .x1805_tpdo_6_communication_parameters = {
         .highest_index_supported = 0x6,
-        .cob_id = 0x282,
+        .cob_id = 0x280,
         .transmission_type = 0xFE,
         .inhibit_time = 0x0,
         .event_timer = 0x1388,
@@ -1080,7 +1082,7 @@ OD_ATTR_RAM OD_RAM_t OD_RAM = {
     },
     .x1806_tpdo_7_communication_parameters = {
         .highest_index_supported = 0x6,
-        .cob_id = 0x382,
+        .cob_id = 0x380,
         .transmission_type = 0xFE,
         .inhibit_time = 0x0,
         .event_timer = 0x1388,
@@ -1136,7 +1138,7 @@ OD_ATTR_RAM OD_RAM_t OD_RAM = {
     .x3002_versions = {
         .highest_index_supported = 0x4,
         .hw_version = {'0', '.', '0', 0}, 
-        .configs_version = {'0', '.', '7', '.', '3', '.', 'd', 'e', 'v', '2', '9', '+', 'g', 'a', '5', '4', '0', '2', 'f', '4', 0}, 
+        .configs_version = {'0', '.', '7', '.', '3', '.', 'd', 'e', 'v', '6', '7', '+', 'g', '1', 'e', '9', '5', '8', '8', '4', 0}, 
         .olaf_version = {'0', '.', '0', '.', '0', 0}, 
         .sw_version = {'0', '.', '0', '.', '0', 0}, 
     },
@@ -1748,44 +1750,44 @@ typedef struct {
     OD_obj_record_t o_161F_rpdo_32_mapping_parameters[5];
     OD_obj_record_t o_1620_rpdo_33_mapping_parameters[3];
     OD_obj_record_t o_1621_rpdo_34_mapping_parameters[7];
-    OD_obj_record_t o_1622_rpdo_35_mapping_parameters[4];
-    OD_obj_record_t o_1623_rpdo_36_mapping_parameters[4];
-    OD_obj_record_t o_1624_rpdo_37_mapping_parameters[2];
-    OD_obj_record_t o_1625_rpdo_38_mapping_parameters[4];
-    OD_obj_record_t o_1626_rpdo_39_mapping_parameters[4];
-    OD_obj_record_t o_1627_rpdo_40_mapping_parameters[4];
-    OD_obj_record_t o_1628_rpdo_41_mapping_parameters[4];
+    OD_obj_record_t o_1622_rpdo_35_mapping_parameters[7];
+    OD_obj_record_t o_1623_rpdo_36_mapping_parameters[3];
+    OD_obj_record_t o_1624_rpdo_37_mapping_parameters[5];
+    OD_obj_record_t o_1625_rpdo_38_mapping_parameters[2];
+    OD_obj_record_t o_1626_rpdo_39_mapping_parameters[7];
+    OD_obj_record_t o_1627_rpdo_40_mapping_parameters[3];
+    OD_obj_record_t o_1628_rpdo_41_mapping_parameters[2];
     OD_obj_record_t o_1629_rpdo_42_mapping_parameters[3];
     OD_obj_record_t o_162A_rpdo_43_mapping_parameters[3];
     OD_obj_record_t o_162B_rpdo_44_mapping_parameters[3];
-    OD_obj_record_t o_162C_rpdo_45_mapping_parameters[4];
-    OD_obj_record_t o_162D_rpdo_46_mapping_parameters[3];
-    OD_obj_record_t o_162E_rpdo_47_mapping_parameters[3];
+    OD_obj_record_t o_162C_rpdo_45_mapping_parameters[5];
+    OD_obj_record_t o_162D_rpdo_46_mapping_parameters[2];
+    OD_obj_record_t o_162E_rpdo_47_mapping_parameters[4];
     OD_obj_record_t o_162F_rpdo_48_mapping_parameters[4];
-    OD_obj_record_t o_1630_rpdo_49_mapping_parameters[4];
-    OD_obj_record_t o_1631_rpdo_50_mapping_parameters[3];
-    OD_obj_record_t o_1632_rpdo_51_mapping_parameters[3];
+    OD_obj_record_t o_1630_rpdo_49_mapping_parameters[2];
+    OD_obj_record_t o_1631_rpdo_50_mapping_parameters[4];
+    OD_obj_record_t o_1632_rpdo_51_mapping_parameters[4];
     OD_obj_record_t o_1633_rpdo_52_mapping_parameters[4];
     OD_obj_record_t o_1634_rpdo_53_mapping_parameters[4];
     OD_obj_record_t o_1635_rpdo_54_mapping_parameters[3];
     OD_obj_record_t o_1636_rpdo_55_mapping_parameters[3];
-    OD_obj_record_t o_1637_rpdo_56_mapping_parameters[4];
+    OD_obj_record_t o_1637_rpdo_56_mapping_parameters[3];
     OD_obj_record_t o_1638_rpdo_57_mapping_parameters[4];
     OD_obj_record_t o_1639_rpdo_58_mapping_parameters[3];
     OD_obj_record_t o_163A_rpdo_59_mapping_parameters[3];
     OD_obj_record_t o_163B_rpdo_60_mapping_parameters[4];
-    OD_obj_record_t o_163C_rpdo_61_mapping_parameters[7];
+    OD_obj_record_t o_163C_rpdo_61_mapping_parameters[4];
     OD_obj_record_t o_163D_rpdo_62_mapping_parameters[3];
-    OD_obj_record_t o_163E_rpdo_63_mapping_parameters[2];
-    OD_obj_record_t o_163F_rpdo_64_mapping_parameters[3];
-    OD_obj_record_t o_1640_rpdo_65_mapping_parameters[3];
+    OD_obj_record_t o_163E_rpdo_63_mapping_parameters[3];
+    OD_obj_record_t o_163F_rpdo_64_mapping_parameters[4];
+    OD_obj_record_t o_1640_rpdo_65_mapping_parameters[4];
     OD_obj_record_t o_1641_rpdo_66_mapping_parameters[3];
-    OD_obj_record_t o_1642_rpdo_67_mapping_parameters[5];
-    OD_obj_record_t o_1643_rpdo_68_mapping_parameters[2];
-    OD_obj_record_t o_1644_rpdo_69_mapping_parameters[7];
+    OD_obj_record_t o_1642_rpdo_67_mapping_parameters[3];
+    OD_obj_record_t o_1643_rpdo_68_mapping_parameters[4];
+    OD_obj_record_t o_1644_rpdo_69_mapping_parameters[4];
     OD_obj_record_t o_1645_rpdo_70_mapping_parameters[3];
-    OD_obj_record_t o_1646_rpdo_71_mapping_parameters[5];
-    OD_obj_record_t o_1647_rpdo_72_mapping_parameters[2];
+    OD_obj_record_t o_1646_rpdo_71_mapping_parameters[3];
+    OD_obj_record_t o_1647_rpdo_72_mapping_parameters[4];
     OD_obj_record_t o_1648_rpdo_73_mapping_parameters[7];
     OD_obj_record_t o_1649_rpdo_74_mapping_parameters[3];
     OD_obj_record_t o_164A_rpdo_75_mapping_parameters[6];
@@ -1869,7 +1871,7 @@ static CO_PROGMEM ODObjs_t ODObjs = {
         .dataOrig0 = &OD_RAM.x1003_predefined_error_field_sub0,
         .dataOrig = &OD_RAM.x1003_predefined_error_field[0],
         .attribute0 = ODA_SDO_R,
-        .attribute = ODA_SDO_RW | ODA_TRPDO | ODA_MB,
+        .attribute = ODA_SDO_R | ODA_TPDO | ODA_MB,
         .dataElementLength = 4,
         .dataElementSizeof = sizeof(uint32_t),
     },
@@ -1951,22 +1953,22 @@ static CO_PROGMEM ODObjs_t ODObjs = {
             .dataLength = 1
         },
         {
-            .dataOrig = NULL,
+            .dataOrig = &OD_RAM.x1023_os_command.command[0],
             .subIndex = 1,
             .attribute = ODA_SDO_RW | ODA_MB,
-            .dataLength = 0
+            .dataLength = 1
         },
         {
             .dataOrig = &OD_RAM.x1023_os_command.status,
             .subIndex = 2,
-            .attribute = ODA_SDO_R | ODA_TPDO | ODA_MB,
-            .dataLength = 4
+            .attribute = ODA_SDO_R | ODA_TPDO,
+            .dataLength = 1
         },
         {
-            .dataOrig = NULL,
+            .dataOrig = &OD_RAM.x1023_os_command.reply[0],
             .subIndex = 3,
             .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 0
+            .dataLength = 1
         },
     },
     .o_1200_sdo_server_parameter = {
@@ -1979,20 +1981,20 @@ static CO_PROGMEM ODObjs_t ODObjs = {
         {
             .dataOrig = &OD_RAM.x1200_sdo_server_parameter.cob_id_client_to_server,
             .subIndex = 1,
-            .attribute = ODA_SDO_RW | ODA_TRPDO | ODA_MB,
+            .attribute = ODA_SDO_R | ODA_TPDO | ODA_MB,
             .dataLength = 4
         },
         {
             .dataOrig = &OD_RAM.x1200_sdo_server_parameter.cob_id_server_to_client,
             .subIndex = 2,
-            .attribute = ODA_SDO_RW | ODA_TRPDO | ODA_MB,
+            .attribute = ODA_SDO_R | ODA_TPDO | ODA_MB,
             .dataLength = 4
         },
         {
             .dataOrig = &OD_RAM.x1200_sdo_server_parameter.node_id_od_sdo_client,
             .subIndex = 3,
-            .attribute = ODA_SDO_RW | ODA_TRPDO | ODA_MB,
-            .dataLength = 4
+            .attribute = ODA_SDO_R | ODA_TPDO,
+            .dataLength = 1
         },
     },
     .o_1280_sdo_client_parameter = {
@@ -2015,11 +2017,10 @@ static CO_PROGMEM ODObjs_t ODObjs = {
             .dataLength = 4
         },
         {
-            .dataOrig = &OD_RAM.x1280_sdo_client_parameter.node_id_od_sdo_client,
+            .dataOrig = &OD_RAM.x1280_sdo_client_parameter.node_id_of_sdo_server,
             .subIndex = 3,
-            .attribute = ODA_SDO_RW | ODA_TRPDO | ODA_MB,
+            .attribute = ODA_SDO_RW | ODA_TRPDO,
             .dataLength = 1
-            //.dataLength = 4
         },
     },
     .o_1400_rpdo_1_communication_parameters = {
@@ -5203,6 +5204,24 @@ static CO_PROGMEM ODObjs_t ODObjs = {
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
+        {
+            .dataOrig = &OD_RAM.x1622_rpdo_35_mapping_parameters.mapping_object_4,
+            .subIndex = 4,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
+        {
+            .dataOrig = &OD_RAM.x1622_rpdo_35_mapping_parameters.mapping_object_5,
+            .subIndex = 5,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
+        {
+            .dataOrig = &OD_RAM.x1622_rpdo_35_mapping_parameters.mapping_object_6,
+            .subIndex = 6,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
     },
     .o_1623_rpdo_36_mapping_parameters = {
         {
@@ -5223,12 +5242,6 @@ static CO_PROGMEM ODObjs_t ODObjs = {
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
-        {
-            .dataOrig = &OD_RAM.x1623_rpdo_36_mapping_parameters.mapping_object_3,
-            .subIndex = 3,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
     },
     .o_1624_rpdo_37_mapping_parameters = {
         {
@@ -5243,6 +5256,24 @@ static CO_PROGMEM ODObjs_t ODObjs = {
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
+        {
+            .dataOrig = &OD_RAM.x1624_rpdo_37_mapping_parameters.mapping_object_2,
+            .subIndex = 2,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
+        {
+            .dataOrig = &OD_RAM.x1624_rpdo_37_mapping_parameters.mapping_object_3,
+            .subIndex = 3,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
+        {
+            .dataOrig = &OD_RAM.x1624_rpdo_37_mapping_parameters.mapping_object_4,
+            .subIndex = 4,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
     },
     .o_1625_rpdo_38_mapping_parameters = {
         {
@@ -5254,18 +5285,6 @@ static CO_PROGMEM ODObjs_t ODObjs = {
         {
             .dataOrig = &OD_RAM.x1625_rpdo_38_mapping_parameters.mapping_object_1,
             .subIndex = 1,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
-        {
-            .dataOrig = &OD_RAM.x1625_rpdo_38_mapping_parameters.mapping_object_2,
-            .subIndex = 2,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
-        {
-            .dataOrig = &OD_RAM.x1625_rpdo_38_mapping_parameters.mapping_object_3,
-            .subIndex = 3,
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
@@ -5295,6 +5314,24 @@ static CO_PROGMEM ODObjs_t ODObjs = {
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
+        {
+            .dataOrig = &OD_RAM.x1626_rpdo_39_mapping_parameters.mapping_object_4,
+            .subIndex = 4,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
+        {
+            .dataOrig = &OD_RAM.x1626_rpdo_39_mapping_parameters.mapping_object_5,
+            .subIndex = 5,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
+        {
+            .dataOrig = &OD_RAM.x1626_rpdo_39_mapping_parameters.mapping_object_6,
+            .subIndex = 6,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
     },
     .o_1627_rpdo_40_mapping_parameters = {
         {
@@ -5315,12 +5352,6 @@ static CO_PROGMEM ODObjs_t ODObjs = {
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
-        {
-            .dataOrig = &OD_RAM.x1627_rpdo_40_mapping_parameters.mapping_object_3,
-            .subIndex = 3,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
     },
     .o_1628_rpdo_41_mapping_parameters = {
         {
@@ -5332,18 +5363,6 @@ static CO_PROGMEM ODObjs_t ODObjs = {
         {
             .dataOrig = &OD_RAM.x1628_rpdo_41_mapping_parameters.mapping_object_1,
             .subIndex = 1,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
-        {
-            .dataOrig = &OD_RAM.x1628_rpdo_41_mapping_parameters.mapping_object_2,
-            .subIndex = 2,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
-        {
-            .dataOrig = &OD_RAM.x1628_rpdo_41_mapping_parameters.mapping_object_3,
-            .subIndex = 3,
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
@@ -5433,6 +5452,12 @@ static CO_PROGMEM ODObjs_t ODObjs = {
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
+        {
+            .dataOrig = &OD_RAM.x162C_rpdo_45_mapping_parameters.mapping_object_4,
+            .subIndex = 4,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
     },
     .o_162D_rpdo_46_mapping_parameters = {
         {
@@ -5444,12 +5469,6 @@ static CO_PROGMEM ODObjs_t ODObjs = {
         {
             .dataOrig = &OD_RAM.x162D_rpdo_46_mapping_parameters.mapping_object_1,
             .subIndex = 1,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
-        {
-            .dataOrig = &OD_RAM.x162D_rpdo_46_mapping_parameters.mapping_object_2,
-            .subIndex = 2,
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
@@ -5470,6 +5489,12 @@ static CO_PROGMEM ODObjs_t ODObjs = {
         {
             .dataOrig = &OD_RAM.x162E_rpdo_47_mapping_parameters.mapping_object_2,
             .subIndex = 2,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
+        {
+            .dataOrig = &OD_RAM.x162E_rpdo_47_mapping_parameters.mapping_object_3,
+            .subIndex = 3,
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
@@ -5513,18 +5538,6 @@ static CO_PROGMEM ODObjs_t ODObjs = {
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
-        {
-            .dataOrig = &OD_RAM.x1630_rpdo_49_mapping_parameters.mapping_object_2,
-            .subIndex = 2,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
-        {
-            .dataOrig = &OD_RAM.x1630_rpdo_49_mapping_parameters.mapping_object_3,
-            .subIndex = 3,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
     },
     .o_1631_rpdo_50_mapping_parameters = {
         {
@@ -5545,6 +5558,12 @@ static CO_PROGMEM ODObjs_t ODObjs = {
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
+        {
+            .dataOrig = &OD_RAM.x1631_rpdo_50_mapping_parameters.mapping_object_3,
+            .subIndex = 3,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
     },
     .o_1632_rpdo_51_mapping_parameters = {
         {
@@ -5562,6 +5581,12 @@ static CO_PROGMEM ODObjs_t ODObjs = {
         {
             .dataOrig = &OD_RAM.x1632_rpdo_51_mapping_parameters.mapping_object_2,
             .subIndex = 2,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
+        {
+            .dataOrig = &OD_RAM.x1632_rpdo_51_mapping_parameters.mapping_object_3,
+            .subIndex = 3,
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
@@ -5674,12 +5699,6 @@ static CO_PROGMEM ODObjs_t ODObjs = {
         {
             .dataOrig = &OD_RAM.x1637_rpdo_56_mapping_parameters.mapping_object_2,
             .subIndex = 2,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
-        {
-            .dataOrig = &OD_RAM.x1637_rpdo_56_mapping_parameters.mapping_object_3,
-            .subIndex = 3,
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
@@ -5801,24 +5820,6 @@ static CO_PROGMEM ODObjs_t ODObjs = {
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
-        {
-            .dataOrig = &OD_RAM.x163C_rpdo_61_mapping_parameters.mapping_object_4,
-            .subIndex = 4,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
-        {
-            .dataOrig = &OD_RAM.x163C_rpdo_61_mapping_parameters.mapping_object_5,
-            .subIndex = 5,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
-        {
-            .dataOrig = &OD_RAM.x163C_rpdo_61_mapping_parameters.mapping_object_6,
-            .subIndex = 6,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
     },
     .o_163D_rpdo_62_mapping_parameters = {
         {
@@ -5853,6 +5854,12 @@ static CO_PROGMEM ODObjs_t ODObjs = {
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
+        {
+            .dataOrig = &OD_RAM.x163E_rpdo_63_mapping_parameters.mapping_object_2,
+            .subIndex = 2,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
     },
     .o_163F_rpdo_64_mapping_parameters = {
         {
@@ -5873,6 +5880,12 @@ static CO_PROGMEM ODObjs_t ODObjs = {
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
+        {
+            .dataOrig = &OD_RAM.x163F_rpdo_64_mapping_parameters.mapping_object_3,
+            .subIndex = 3,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
     },
     .o_1640_rpdo_65_mapping_parameters = {
         {
@@ -5890,6 +5903,12 @@ static CO_PROGMEM ODObjs_t ODObjs = {
         {
             .dataOrig = &OD_RAM.x1640_rpdo_65_mapping_parameters.mapping_object_2,
             .subIndex = 2,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
+        {
+            .dataOrig = &OD_RAM.x1640_rpdo_65_mapping_parameters.mapping_object_3,
+            .subIndex = 3,
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
@@ -5933,18 +5952,6 @@ static CO_PROGMEM ODObjs_t ODObjs = {
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
-        {
-            .dataOrig = &OD_RAM.x1642_rpdo_67_mapping_parameters.mapping_object_3,
-            .subIndex = 3,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
-        {
-            .dataOrig = &OD_RAM.x1642_rpdo_67_mapping_parameters.mapping_object_4,
-            .subIndex = 4,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
     },
     .o_1643_rpdo_68_mapping_parameters = {
         {
@@ -5956,6 +5963,18 @@ static CO_PROGMEM ODObjs_t ODObjs = {
         {
             .dataOrig = &OD_RAM.x1643_rpdo_68_mapping_parameters.mapping_object_1,
             .subIndex = 1,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
+        {
+            .dataOrig = &OD_RAM.x1643_rpdo_68_mapping_parameters.mapping_object_2,
+            .subIndex = 2,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
+        {
+            .dataOrig = &OD_RAM.x1643_rpdo_68_mapping_parameters.mapping_object_3,
+            .subIndex = 3,
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
@@ -5982,24 +6001,6 @@ static CO_PROGMEM ODObjs_t ODObjs = {
         {
             .dataOrig = &OD_RAM.x1644_rpdo_69_mapping_parameters.mapping_object_3,
             .subIndex = 3,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
-        {
-            .dataOrig = &OD_RAM.x1644_rpdo_69_mapping_parameters.mapping_object_4,
-            .subIndex = 4,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
-        {
-            .dataOrig = &OD_RAM.x1644_rpdo_69_mapping_parameters.mapping_object_5,
-            .subIndex = 5,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
-        {
-            .dataOrig = &OD_RAM.x1644_rpdo_69_mapping_parameters.mapping_object_6,
-            .subIndex = 6,
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
@@ -6043,18 +6044,6 @@ static CO_PROGMEM ODObjs_t ODObjs = {
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
-        {
-            .dataOrig = &OD_RAM.x1646_rpdo_71_mapping_parameters.mapping_object_3,
-            .subIndex = 3,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
-        {
-            .dataOrig = &OD_RAM.x1646_rpdo_71_mapping_parameters.mapping_object_4,
-            .subIndex = 4,
-            .attribute = ODA_SDO_R | ODA_MB,
-            .dataLength = 4
-        },
     },
     .o_1647_rpdo_72_mapping_parameters = {
         {
@@ -6066,6 +6055,18 @@ static CO_PROGMEM ODObjs_t ODObjs = {
         {
             .dataOrig = &OD_RAM.x1647_rpdo_72_mapping_parameters.mapping_object_1,
             .subIndex = 1,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
+        {
+            .dataOrig = &OD_RAM.x1647_rpdo_72_mapping_parameters.mapping_object_2,
+            .subIndex = 2,
+            .attribute = ODA_SDO_R | ODA_MB,
+            .dataLength = 4
+        },
+        {
+            .dataOrig = &OD_RAM.x1647_rpdo_72_mapping_parameters.mapping_object_3,
+            .subIndex = 3,
             .attribute = ODA_SDO_R | ODA_MB,
             .dataLength = 4
         },
@@ -9522,44 +9523,44 @@ static OD_ATTR_OD OD_entry_t ODList[] = {
     {0x161F, 0x05, ODT_REC, &ODObjs.o_161F_rpdo_32_mapping_parameters, NULL},
     {0x1620, 0x03, ODT_REC, &ODObjs.o_1620_rpdo_33_mapping_parameters, NULL},
     {0x1621, 0x07, ODT_REC, &ODObjs.o_1621_rpdo_34_mapping_parameters, NULL},
-    {0x1622, 0x04, ODT_REC, &ODObjs.o_1622_rpdo_35_mapping_parameters, NULL},
-    {0x1623, 0x04, ODT_REC, &ODObjs.o_1623_rpdo_36_mapping_parameters, NULL},
-    {0x1624, 0x02, ODT_REC, &ODObjs.o_1624_rpdo_37_mapping_parameters, NULL},
-    {0x1625, 0x04, ODT_REC, &ODObjs.o_1625_rpdo_38_mapping_parameters, NULL},
-    {0x1626, 0x04, ODT_REC, &ODObjs.o_1626_rpdo_39_mapping_parameters, NULL},
-    {0x1627, 0x04, ODT_REC, &ODObjs.o_1627_rpdo_40_mapping_parameters, NULL},
-    {0x1628, 0x04, ODT_REC, &ODObjs.o_1628_rpdo_41_mapping_parameters, NULL},
+    {0x1622, 0x07, ODT_REC, &ODObjs.o_1622_rpdo_35_mapping_parameters, NULL},
+    {0x1623, 0x03, ODT_REC, &ODObjs.o_1623_rpdo_36_mapping_parameters, NULL},
+    {0x1624, 0x05, ODT_REC, &ODObjs.o_1624_rpdo_37_mapping_parameters, NULL},
+    {0x1625, 0x02, ODT_REC, &ODObjs.o_1625_rpdo_38_mapping_parameters, NULL},
+    {0x1626, 0x07, ODT_REC, &ODObjs.o_1626_rpdo_39_mapping_parameters, NULL},
+    {0x1627, 0x03, ODT_REC, &ODObjs.o_1627_rpdo_40_mapping_parameters, NULL},
+    {0x1628, 0x02, ODT_REC, &ODObjs.o_1628_rpdo_41_mapping_parameters, NULL},
     {0x1629, 0x03, ODT_REC, &ODObjs.o_1629_rpdo_42_mapping_parameters, NULL},
     {0x162A, 0x03, ODT_REC, &ODObjs.o_162A_rpdo_43_mapping_parameters, NULL},
     {0x162B, 0x03, ODT_REC, &ODObjs.o_162B_rpdo_44_mapping_parameters, NULL},
-    {0x162C, 0x04, ODT_REC, &ODObjs.o_162C_rpdo_45_mapping_parameters, NULL},
-    {0x162D, 0x03, ODT_REC, &ODObjs.o_162D_rpdo_46_mapping_parameters, NULL},
-    {0x162E, 0x03, ODT_REC, &ODObjs.o_162E_rpdo_47_mapping_parameters, NULL},
+    {0x162C, 0x05, ODT_REC, &ODObjs.o_162C_rpdo_45_mapping_parameters, NULL},
+    {0x162D, 0x02, ODT_REC, &ODObjs.o_162D_rpdo_46_mapping_parameters, NULL},
+    {0x162E, 0x04, ODT_REC, &ODObjs.o_162E_rpdo_47_mapping_parameters, NULL},
     {0x162F, 0x04, ODT_REC, &ODObjs.o_162F_rpdo_48_mapping_parameters, NULL},
-    {0x1630, 0x04, ODT_REC, &ODObjs.o_1630_rpdo_49_mapping_parameters, NULL},
-    {0x1631, 0x03, ODT_REC, &ODObjs.o_1631_rpdo_50_mapping_parameters, NULL},
-    {0x1632, 0x03, ODT_REC, &ODObjs.o_1632_rpdo_51_mapping_parameters, NULL},
+    {0x1630, 0x02, ODT_REC, &ODObjs.o_1630_rpdo_49_mapping_parameters, NULL},
+    {0x1631, 0x04, ODT_REC, &ODObjs.o_1631_rpdo_50_mapping_parameters, NULL},
+    {0x1632, 0x04, ODT_REC, &ODObjs.o_1632_rpdo_51_mapping_parameters, NULL},
     {0x1633, 0x04, ODT_REC, &ODObjs.o_1633_rpdo_52_mapping_parameters, NULL},
     {0x1634, 0x04, ODT_REC, &ODObjs.o_1634_rpdo_53_mapping_parameters, NULL},
     {0x1635, 0x03, ODT_REC, &ODObjs.o_1635_rpdo_54_mapping_parameters, NULL},
     {0x1636, 0x03, ODT_REC, &ODObjs.o_1636_rpdo_55_mapping_parameters, NULL},
-    {0x1637, 0x04, ODT_REC, &ODObjs.o_1637_rpdo_56_mapping_parameters, NULL},
+    {0x1637, 0x03, ODT_REC, &ODObjs.o_1637_rpdo_56_mapping_parameters, NULL},
     {0x1638, 0x04, ODT_REC, &ODObjs.o_1638_rpdo_57_mapping_parameters, NULL},
     {0x1639, 0x03, ODT_REC, &ODObjs.o_1639_rpdo_58_mapping_parameters, NULL},
     {0x163A, 0x03, ODT_REC, &ODObjs.o_163A_rpdo_59_mapping_parameters, NULL},
     {0x163B, 0x04, ODT_REC, &ODObjs.o_163B_rpdo_60_mapping_parameters, NULL},
-    {0x163C, 0x07, ODT_REC, &ODObjs.o_163C_rpdo_61_mapping_parameters, NULL},
+    {0x163C, 0x04, ODT_REC, &ODObjs.o_163C_rpdo_61_mapping_parameters, NULL},
     {0x163D, 0x03, ODT_REC, &ODObjs.o_163D_rpdo_62_mapping_parameters, NULL},
-    {0x163E, 0x02, ODT_REC, &ODObjs.o_163E_rpdo_63_mapping_parameters, NULL},
-    {0x163F, 0x03, ODT_REC, &ODObjs.o_163F_rpdo_64_mapping_parameters, NULL},
-    {0x1640, 0x03, ODT_REC, &ODObjs.o_1640_rpdo_65_mapping_parameters, NULL},
+    {0x163E, 0x03, ODT_REC, &ODObjs.o_163E_rpdo_63_mapping_parameters, NULL},
+    {0x163F, 0x04, ODT_REC, &ODObjs.o_163F_rpdo_64_mapping_parameters, NULL},
+    {0x1640, 0x04, ODT_REC, &ODObjs.o_1640_rpdo_65_mapping_parameters, NULL},
     {0x1641, 0x03, ODT_REC, &ODObjs.o_1641_rpdo_66_mapping_parameters, NULL},
-    {0x1642, 0x05, ODT_REC, &ODObjs.o_1642_rpdo_67_mapping_parameters, NULL},
-    {0x1643, 0x02, ODT_REC, &ODObjs.o_1643_rpdo_68_mapping_parameters, NULL},
-    {0x1644, 0x07, ODT_REC, &ODObjs.o_1644_rpdo_69_mapping_parameters, NULL},
+    {0x1642, 0x03, ODT_REC, &ODObjs.o_1642_rpdo_67_mapping_parameters, NULL},
+    {0x1643, 0x04, ODT_REC, &ODObjs.o_1643_rpdo_68_mapping_parameters, NULL},
+    {0x1644, 0x04, ODT_REC, &ODObjs.o_1644_rpdo_69_mapping_parameters, NULL},
     {0x1645, 0x03, ODT_REC, &ODObjs.o_1645_rpdo_70_mapping_parameters, NULL},
-    {0x1646, 0x05, ODT_REC, &ODObjs.o_1646_rpdo_71_mapping_parameters, NULL},
-    {0x1647, 0x02, ODT_REC, &ODObjs.o_1647_rpdo_72_mapping_parameters, NULL},
+    {0x1646, 0x03, ODT_REC, &ODObjs.o_1646_rpdo_71_mapping_parameters, NULL},
+    {0x1647, 0x04, ODT_REC, &ODObjs.o_1647_rpdo_72_mapping_parameters, NULL},
     {0x1648, 0x07, ODT_REC, &ODObjs.o_1648_rpdo_73_mapping_parameters, NULL},
     {0x1649, 0x03, ODT_REC, &ODObjs.o_1649_rpdo_74_mapping_parameters, NULL},
     {0x164A, 0x06, ODT_REC, &ODObjs.o_164A_rpdo_75_mapping_parameters, NULL},
