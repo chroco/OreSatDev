@@ -15,6 +15,10 @@ set(SOURCE_FILES
   "${CMAKE_CURRENT_LIST_DIR}/Radio.cpp"
 )
 
+add_compile_options(
+  -g
+)
+
 # Uncomment and add any modules that this component depends on, else
 # they might not be available when cmake tries to build this component.
 #

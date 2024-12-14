@@ -97,6 +97,11 @@ module OreSatDev {
    stack size Default.STACK_SIZE \
    priority 94
 
+  instance radio: Components.Radio base id 0x1000 \
+   queue size Default.QUEUE_SIZE \
+   stack size Default.STACK_SIZE \
+   priority 93
+
   # ----------------------------------------------------------------------
   # Queued component instances
   # ----------------------------------------------------------------------
@@ -133,4 +138,5 @@ module OreSatDev {
 
   instance gpioDriver: Drv.LinuxGpioDriver base id 0x4C00
 
+  instance udpDriver: Drv.Udp base id 0x4D00
 }

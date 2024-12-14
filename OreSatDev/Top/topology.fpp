@@ -16,6 +16,8 @@ module OreSatDev {
     # Instances used in the topology
     # ----------------------------------------------------------------------
 
+    instance udpDriver
+    instance radio
     instance coMgr
     instance gpioDriver
     instance led
@@ -143,6 +145,13 @@ module OreSatDev {
       #rateGroup1.RateGroupMemberOut[4] -> coMgr.run
       # led's gpioSet output is connected to gpioDriver's gpioWrite input
       led.gpioSet -> gpioDriver.gpioWrite
+      
+      radio.udpSend -> udpDriver.$send
+      udpDriver.$recv -> radio.udpRecv 
+      udpDriver.allocate -> bufferManager.bufferGetCallee
+      udpDriver.deallocate -> bufferManager.bufferSendIn
+      radio.allocate -> bufferManager.bufferGetCallee
+      radio.deallocate -> bufferManager.bufferSendIn
     }
 
   }

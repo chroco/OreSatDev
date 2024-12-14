@@ -7,6 +7,22 @@ module Components {
         @ TODO
         async command TODO opcode 0
 
+        @ UDP send port: sends an EDL packet to the UDP driver
+        output port udpSend: Drv.ByteStreamSend
+        
+        @ UDP recv port: receives an EDL packet from the UDP driver
+        guarded input port udpRecv: Drv.ByteStreamRecv
+
+        @ Allocation port for a buffer
+        output port allocate: Fw.BufferGet
+
+        @ Deallocation port for buffers
+        output port deallocate: Fw.BufferSend
+        
+        @ Allocation failed event
+        event MemoryAllocationFailed() severity warning low id 0 format "Failed to allocate memory"
+
+
         ##############################################################################
         #### Uncomment the following examples to start customizing your component ####
         ##############################################################################

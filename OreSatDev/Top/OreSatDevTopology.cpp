@@ -57,7 +57,9 @@ enum TopologyConstants {
     DEFRAMER_BUFFER_COUNT = 30,
     COM_DRIVER_BUFFER_SIZE = 3000,
     COM_DRIVER_BUFFER_COUNT = 30,
-    BUFFER_MANAGER_ID = 200
+    BUFFER_MANAGER_ID = 200,
+		EDL_BUFFER_SIZE = 100 * sizeof(U8),
+		EDL_BUFFER_COUNT = 30
 };
 
 // Ping entries are autocoded, however; this code is not properly exported. Thus, it is copied here.
@@ -93,6 +95,8 @@ void configureTopology() {
     upBuffMgrBins.bins[1].numBuffers = DEFRAMER_BUFFER_COUNT;
     upBuffMgrBins.bins[2].bufferSize = COM_DRIVER_BUFFER_SIZE;
     upBuffMgrBins.bins[2].numBuffers = COM_DRIVER_BUFFER_COUNT;
+    upBuffMgrBins.bins[3].bufferSize = EDL_BUFFER_SIZE;
+    upBuffMgrBins.bins[3].numBuffers = EDL_BUFFER_COUNT;
     bufferManager.setup(BUFFER_MANAGER_ID, 0, mallocator, upBuffMgrBins);
 
     // Framer and Deframer components need to be passed a protocol handler
@@ -133,11 +137,13 @@ void configureTopology() {
     // Allocation identifier is 0 as the MallocAllocator discards it
     comQueue.configure(configurationTable, 0, mallocator);
 
-    Os::File::Status status =
-        gpioDriver.open("/dev/gpiochip1", 15, Drv::LinuxGpioDriver::GpioConfiguration::GPIO_OUTPUT);
-    if (status != Os::File::Status::OP_OK) {
-        Fw::Logger::log("[ERROR] Failed to open GPIO pin\n");
-    }
+		{
+			Os::File::Status status =
+					gpioDriver.open("/dev/gpiochip1", 15, Drv::LinuxGpioDriver::GpioConfiguration::GPIO_OUTPUT);
+			if (status != Os::File::Status::OP_OK) {
+					Fw::Logger::log("[ERROR] Failed to open GPIO pin\n");
+			}
+		}
 }
 
 // Public functions for use in main program are namespaced with deployment name OreSatDev
@@ -166,6 +172,12 @@ void setupTopology(const TopologyState& state) {
         comDriver.configure(state.hostname, state.port);
         comDriver.start(name, true, COMM_PRIORITY, Default::STACK_SIZE);
     }
+
+		udpDriver.init(0);
+		udpDriver.configureSend("127.0.0.1",1331);
+		udpDriver.configureRecv("127.0.0.1",1331);
+		Os::TaskString name("ReceiveTask");
+		udpDriver.start(name, true, COMM_PRIORITY, Default::STACK_SIZE);
 }
 
 // Variables used for cycle simulation
@@ -202,6 +214,8 @@ void teardownTopology(const TopologyState& state) {
     // Other task clean-up.
     comDriver.stop();
     (void)comDriver.join();
+    udpDriver.stop();
+    (void)udpDriver.join();
 
     // Resource deallocation
     cmdSeq.deallocateBuffer(mallocator);
