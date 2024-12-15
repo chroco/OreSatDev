@@ -12,54 +12,16 @@
 #include <Drv/Udp/UdpComponentImpl.hpp>
 //#include <Drv/Udp/test/ut/UdpTester.hpp>
 #include <Drv/Ip/TcpServerSocket.hpp>
-#include <atomic>
+
+//#include "Components/Radio/edl_packet.hpp"
 
 #define SEND_DATA_BUFFER_SIZE 1024
 
 namespace Components {
 
-	typedef struct {
-		// USLP Primary Header (7 octets)
-		struct __attribute((packed)) {
-			uint16_t transfer_frame_version_number : 4;
-			uint16_t space_craft_id : 16;
-			uint16_t source_or_destination_id : 1;
-			uint16_t virtual_channel_id : 6;
-			uint16_t map_id : 4;
-			uint16_t end_of_frame_primary_header_flag : 1;
-			uint16_t frame_length : 16;
-			uint16_t bypass_sequence_control_flag : 1;
-			uint16_t protocol_control_command_flag : 1;
-			uint16_t reserve_spare_bits : 2;
-			uint16_t operation_control_flag : 1;
-			uint16_t vc_frame_count_length : 3;
-		} primary_header;
-
-		// sequence number
-		uint32_t sequence_number;
-		
-		// USLP data header
-		struct __attribute((packed)) {
-			uint8_t tfdz : 3;
-			uint8_t upid : 5;
-		} data_header;
-
-		// Payload (X octets);
-		uint8_t code;
-		uint16_t *data;
-
-		// HMAC (32 octets)
-		uint8_t hmac[32];
-		
-		// Frame error control field
-		uint16_t fecf;
-		
-	} edlpacket_t;
-
   class Radio :
     public RadioComponentBase
   {
-
  
     public:
 
@@ -83,27 +45,14 @@ namespace Components {
       ~Radio();
 
     PRIVATE:
-			Os::Task m_udpServer;
+			U8 rate_group_counter;
+			
 			Os::Task m_udpClient;
-			static void udpServerTaskEntry(void *);
 			static void udpClientTaskEntry(void *);
 
-      Fw::Buffer m_data_buffer;
-			
 			char hostname[20];
 			U16 port;
-			// ----------------------------------------------------------------------
-      // Handler implementations for commands
-      // ----------------------------------------------------------------------
-
-      //! Handler implementation for command TODO
-      //!
-      //! TODO
-      void TODO_cmdHandler(
-          FwOpcodeType opCode, //!< The opcode
-          U32 cmdSeq //!< The command sequence number
-      ) override;
-
+	
       // ----------------------------------------------------------------------
       // Handler implementations for user-defined typed input ports
       // ----------------------------------------------------------------------
@@ -116,8 +65,31 @@ namespace Components {
           Fw::Buffer& recvBuffer,
           const Drv::RecvStatus& recvStatus
       ) override;
+      
+			// ----------------------------------------------------------------------
+      // Handler implementations for user-defined typed input ports
+      // ----------------------------------------------------------------------
 
-			void testPacket(void);
+      //! Handler implementation for run
+      //!
+      //! Port receiving calls from the rate group
+      void run_handler(
+          FwIndexType portNum, //!< The port number
+          U32 context //!< The call order
+      ) override;
+
+			// ----------------------------------------------------------------------
+      // Handler implementations for commands
+      // ----------------------------------------------------------------------
+
+      //! Handler implementation for command TODO
+      //!
+      //! TODO
+      void TODO_cmdHandler(
+          FwOpcodeType opCode, //!< The opcode
+          U32 cmdSeq //!< The command sequence number
+      ) override;
+
   };
 
 }

@@ -5,6 +5,7 @@
 // ======================================================================
 
 #include "Components/Radio/Radio.hpp"
+#include "Components/Radio/edl_packet.hpp"
 #include "FpConfig.hpp"
 
 namespace Components {
@@ -16,10 +17,9 @@ namespace Components {
   Radio ::
     Radio(const char* const compName) :
       RadioComponentBase(compName),
-			m_data_buffer({}),
+			rate_group_counter(0),
 			port(1331)
   {
-		testPacket();
 		strncpy(hostname, "127.0.0.1\0", sizeof(hostname));
 	}
 
@@ -43,10 +43,6 @@ namespace Components {
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
   }
 	
-	void Radio :: udpServerTaskEntry(void *) {
-			
-	}
-	
 	// ----------------------------------------------------------------------
   // Handler implementations for user-defined typed input ports
   // ----------------------------------------------------------------------
@@ -58,13 +54,16 @@ namespace Components {
         const Drv::RecvStatus& recvStatus
     )
   {
-    U8 data[80];
-		U8 *pdata = recvBuffer.getData();
-		memcpy(data, pdata, sizeof(data));
-		this->deallocate_out(0,recvBuffer);
-		printf("data[0]: %d ", data[0]);
-  }
+		EdlPacket edlpacket = {};
+		U8 *pBytes = edlpacket.getBytes();
+		U8 *pData = recvBuffer.getData();
 
+		memcpy(pBytes, pData, edlpacket.getSize());
+		this->deallocate_out(0,recvBuffer);
+		printf("<");
+		edlpacket.printBytes();
+		printf("\n");
+  }
 
 	void Radio :: udpClientTaskEntry(void *ptr) {
 		FW_ASSERT(ptr != nullptr);
@@ -72,31 +71,57 @@ namespace Components {
 
 		U8 i = 0;
 		for (;;++i) {
-			U8 data[80] = {0};
-			data[0] = i;
+			EdlPacket edlpacket = {};
+			edlpacket.set_code(i);
+			edlpacket.set_tfvn(i);
+			edlpacket.set_scid(0xab);
+			U8 *pBytes = edlpacket.getBytes();
 
-			Fw::Buffer buffer = radio->allocate_out(0, sizeof(data));
-			if (buffer.getSize() < sizeof(data)) {
-				FW_ASSERT(0, buffer.getSize(), sizeof(data));
+			Fw::Buffer buffer = radio->allocate_out(0, edlpacket.getSize());
+			if (buffer.getSize() < edlpacket.getSize()) {
+				FW_ASSERT(0, buffer.getSize(), edlpacket.getSize());
 			}
 
-			Fw::SerializeStatus stat = buffer.getSerializeRepr().serialize(data, sizeof(data), true);
+			Fw::SerializeStatus stat = buffer.getSerializeRepr().serialize(pBytes, edlpacket.getSize(), true);
 			FW_ASSERT(stat == Fw::SerializeStatus::FW_SERIALIZE_OK);
 			
-			printf("udpSend_out ");
+			printf(">");
+			edlpacket.printBytes();
 			radio->udpSend_out(0,buffer);
+
 			Os::Task::delay(Fw::TimeInterval(1, 0));
 		}
 	}
 
-	void Radio :: testPacket(void) {
-		edlpacket_t packet = {0};	
-		
-		printf("Packet size: %lu\n", sizeof(packet));
-		printf("Primary header size: %lu\n", sizeof(packet.primary_header));
-		printf("Data header size: %lu\n", sizeof(packet.data_header));
+  // ----------------------------------------------------------------------
+  // Handler implementations for user-defined typed input ports
+  // ----------------------------------------------------------------------
+ 
+  void Radio ::
+    run_handler(
+        FwIndexType portNum,
+        U32 context
+    )
+  {
+		EdlPacket edlpacket = {};
+		edlpacket.set_code(rate_group_counter);
+		edlpacket.set_tfvn(rate_group_counter);
+		edlpacket.set_scid(0xab);
+		++rate_group_counter;
+		U8 *pBytes = edlpacket.getBytes();
 
-	}
+		Fw::Buffer buffer = this->allocate_out(0, edlpacket.getSize());
+		if (buffer.getSize() < edlpacket.getSize()) {
+			FW_ASSERT(0, buffer.getSize(), edlpacket.getSize());
+		}
+
+		Fw::SerializeStatus stat = buffer.getSerializeRepr().serialize(pBytes, edlpacket.getSize(), true);
+		FW_ASSERT(stat == Fw::SerializeStatus::FW_SERIALIZE_OK);
+		
+		printf(">");
+		edlpacket.printBytes();
+		this->udpSend_out(0,buffer);
+  }
 
 	void Radio :: start(
 		Os::Task::ParamType priority,
@@ -105,19 +130,11 @@ namespace Components {
 		Os::Task::ParamType taskId
 	)
 	{
-//*
+/*
 		{
 			Os::TaskString task("UDP Client");
 			Os::Task::Arguments arguments(task, udpClientTaskEntry, this, priority, stackSize, cpuAffinity, taskId);
 			Os::Task::Status stat = this->m_udpClient.start(arguments);
-			FW_ASSERT(stat == Os::Task::OP_OK, stat);
-		}
-//*/
-/*
-		{
-			Os::TaskString task("UDP Server");
-			Os::Task::Arguments arguments(task, udpServerTaskEntry, this, priority, stackSize, cpuAffinity, taskId);
-			Os::Task::Status stat = this->m_udpServer.start(arguments);
 			FW_ASSERT(stat == Os::Task::OP_OK, stat);
 		}
 //*/

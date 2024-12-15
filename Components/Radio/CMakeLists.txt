@@ -13,6 +13,7 @@
 set(SOURCE_FILES
   "${CMAKE_CURRENT_LIST_DIR}/Radio.fpp"
   "${CMAKE_CURRENT_LIST_DIR}/Radio.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/edl_packet.cpp"
 )
 
 add_compile_options(

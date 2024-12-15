@@ -22,7 +22,9 @@ module Components {
         @ Allocation failed event
         event MemoryAllocationFailed() severity warning low id 0 format "Failed to allocate memory"
 
-
+        @ Port receiving calls from the rate group
+        sync input port run: Svc.Sched
+        
         ##############################################################################
         #### Uncomment the following examples to start customizing your component ####
         ##############################################################################

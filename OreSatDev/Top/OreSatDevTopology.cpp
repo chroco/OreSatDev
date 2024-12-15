@@ -214,6 +214,7 @@ void teardownTopology(const TopologyState& state) {
     // Other task clean-up.
     comDriver.stop();
     (void)comDriver.join();
+
     udpDriver.stop();
     (void)udpDriver.join();
 
