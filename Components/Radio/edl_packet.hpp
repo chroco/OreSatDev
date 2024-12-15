@@ -1,20 +1,11 @@
 #ifndef EDL_Packet_HPP
 #define EDL_Packet_HPP
 
+#include "Components/Radio/RadioComponentAc.hpp"
 #include "FpConfig.hpp"
 #include <iostream>
+#include <cstring>
 
-/*
-class Serializable
-{
-	public:
-		Serializable(){}
-		virtual ~Serializable(){}
-
-		virtual void serialize(edlpacket_t, U8 *, U32) = 0;
-		virtual void deserialize(edlpacket_t, U8 *, U32) = 0;
-};
-//*/
 namespace Components {
 
 	typedef struct edlpacket_t edlpacket_t;
@@ -71,11 +62,50 @@ namespace Components {
 			U8 get_sodid();
 			void set_sodid(U8);
 		
+			U8 get_vcid();
+			void set_vcid(U8);
+		
+			U8 get_mid();
+			void set_mid(U8);
 
+			U8 get_eofphf();
+			void set_eofphf(U8);
 
+			U16 get_fl();
+			void set_fl(U16);
+		
+			U8 get_bscf();
+			void set_bscf(U8);
+
+			U8 get_pccf();
+			void set_pccf(U8);
+
+			U8 get_rsb();
+			void set_rsb(U8);
+
+			U8 get_ocf();
+			void set_ocf(U8);
+
+			U8 get_vfcl();
+			void set_vfcl(U8);
+
+			U32 get_sequence_number();
+			void set_sequence_number(U32);
+
+			U8 get_tfdz();
+			void set_tfdz(U8);
+
+			U8 get_upid();
+			void set_upid(U8);
 
 			U8 get_code();
 			void set_code(U8);
+
+			U8* get_hmac();
+			void set_hmac(U8 [], U32);
+
+			U16 get_fecf();
+			void set_fecf(U16);
 
 			U8* getBytes();
 			U16 getSize();
